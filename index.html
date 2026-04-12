@@ -307,6 +307,32 @@
         }
         .copy-btn:hover { opacity: 1; background: var(--accent); }
 
+        .fullscreen-btn {
+            background: rgba(255,255,255,0.1);
+            color: var(--text-muted);
+            border: none;
+            padding: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+            margin-left: 10px;
+        }
+        .fullscreen-btn:hover { background: var(--accent); color: white; }
+        .fullscreen-btn svg { width: 16px; height: 16px; }
+
+        .chat-container.fullscreen {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            max-width: none;
+            margin: 0;
+            z-index: 9999;
+            border-radius: 0;
+        }
+
         .chat-input-area {
             padding: 1.5rem 2rem;
             background: var(--glass);
@@ -455,7 +481,7 @@
                     <div style="width: 10px; height: 10px; background: #00ff88; border-radius: 50%; box-shadow: 0 0 10px #00ff88;"></div>
                     <span style="font-weight: 600; font-size: 0.9rem;">Chat with ERROR (Uncensored)</span>
                 </div>
-                <div>
+                <div style="display: flex; align-items: center;">
                     <span style="font-size: 0.7rem; color: var(--text-muted); margin-right: 0.5rem;">AI VOICE:</span>
                     <select id="chat-style" class="style-select">
                         <option value="Default">Default</option>
@@ -463,6 +489,9 @@
                         <option value="Aggressive">Aggressive</option>
                         <option value="Helpful">Helpful</option>
                     </select>
+                    <button id="fullscreen-btn" class="fullscreen-btn" title="Toggle Fullscreen">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+                    </button>
                 </div>
             </div>
             <div class="chat-messages" id="chat-messages">
@@ -598,6 +627,18 @@
 
         sendBtn.onclick = sendMessage;
         userInput.onkeypress = (e) => { if(e.key === 'Enter') sendMessage(); };
+
+        // Fullscreen Toggle
+        const chatContainer = document.querySelector('.chat-container');
+        const fsBtn = document.getElementById('fullscreen-btn');
+        fsBtn.onclick = () => {
+            chatContainer.classList.toggle('fullscreen');
+            if(chatContainer.classList.contains('fullscreen')) {
+                fsBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7"/></svg>';
+            } else {
+                fsBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>';
+            }
+        };
 
         loadConfig();
     </script>
