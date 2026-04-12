@@ -331,6 +331,10 @@
             margin: 0;
             z-index: 9999;
             border-radius: 0;
+            background: var(--bg);
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(157, 124, 255, 0.05) 0%, transparent 50%),
+                url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2v-4h4v-2h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2v-4h4v-2H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }
 
         .chat-input-area {
@@ -376,9 +380,35 @@
         }
 
         @media (max-width: 768px) {
-            h1 { font-size: 3rem; }
-            nav { padding: 1.5rem 5%; }
-            .chat-container { margin: 2rem 5%; height: 500px; }
+            h1 { font-size: 2.5rem; }
+            nav { padding: 1rem 5%; flex-direction: column; gap: 1rem; }
+            .nav-links { display: flex; gap: 1rem; margin-top: 5px; }
+            .nav-links a { margin-left: 0; font-size: 0.8rem; }
+            .chat-container { margin: 1rem 3%; height: 75vh; }
+            .chat-messages { padding: 1rem; gap: 1rem; }
+            .message { max-width: 90%; font-size: 0.85rem; padding: 0.8rem 1rem; }
+            .chat-input-area { padding: 1rem; gap: 0.5rem; }
+            .chat-input { padding: 0.8rem 1rem; font-size: 0.85rem; }
+            .send-btn { padding: 0 1rem; font-size: 0.8rem; }
+            .chat-header { padding: 1rem; }
+            .badge { margin-bottom: 1rem; }
+            .section { padding: 60px 5%; }
+            .features { grid-template-columns: 1fr; }
+            .pricing-grid { flex-direction: column; align-items: center; }
+            .price-card { width: 100%; max-width: 400px; }
+            
+            /* Fullscreen mobile tweaks */
+            .chat-container.fullscreen {
+                height: 100vh;
+                width: 100vw;
+            }
+        }
+
+        /* Smallest screens */
+        @media (max-width: 480px) {
+            .chat-header span { display: none; }
+            .chat-header .tg-icon span { display: inline; }
+            .style-select { padding: 0.2rem; font-size: 0.7rem; }
         }
     </style>
 </head>
