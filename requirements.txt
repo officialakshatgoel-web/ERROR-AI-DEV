@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+aiogram
+sqlalchemy
+ollama
+python-dotenv
+httpx
+aiohttp
+pydantic
+pydantic-settings
+jinja2

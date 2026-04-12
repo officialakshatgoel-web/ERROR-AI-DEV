@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error AI | Advanced Uncensored AI</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>❌</text></svg>">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #050505;
+            --accent: #7c4dff;
+            --accent-glow: rgba(124, 77, 255, 0.4);
+            --text-main: #ffffff;
+            --text-muted: #888888;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3 { font-family: 'Outfit', sans-serif; }
+
+        /* Background Effects */
+        .blobs {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            filter: blur(80px);
+        }
+        .blob {
+            position: absolute;
+            width: 400px; height: 400px;
+            background: var(--accent);
+            border-radius: 50%;
+            opacity: 0.1;
+            animation: move 20s infinite alternate;
+        }
+        @keyframes move {
+            from { transform: translate(-10%, -10%); }
+            to { transform: translate(50%, 40%); }
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2rem 10%;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            backdrop-filter: blur(10px);
+            z-index: 100;
+        }
+
+        .logo { font-size: 1.5rem; font-weight: 800; letter-spacing: -1px; }
+        .logo span { color: var(--accent); }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-muted);
+            margin-left: 2rem;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+        .nav-links a:hover { color: var(--text-main); }
+
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 10%;
+        }
+
+        .badge {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-bottom: 2rem;
+            color: var(--accent);
+        }
+
+        h1 {
+            font-size: 5rem;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(to bottom, #fff, #888);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin-bottom: 3rem;
+        }
+
+        .btn {
+            background: var(--text-main);
+            color: var(--bg);
+            padding: 1rem 2.5rem;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.3s;
+            border: 1px solid white;
+        }
+        .btn:hover {
+            background: transparent;
+            color: white;
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .section { padding: 100px 10%; }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            padding: 2.5rem;
+            border-radius: 15px;
+            transition: 0.3s;
+        }
+        .card:hover { border-color: var(--accent); transform: translateY(-5px); }
+        .card h3 { margin-bottom: 1rem; font-size: 1.5rem; }
+        .card p { color: var(--text-muted); line-height: 1.6; }
+
+        .pricing-section {
+            text-align: center;
+            background: rgba(124, 77, 255, 0.05);
+            border-radius: 30px;
+        }
+
+        .pricing-grid {
+            margin-top: 4rem;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .price-card {
+            background: var(--bg);
+            border: 1px solid var(--glass-border);
+            padding: 3rem;
+            border-radius: 20px;
+            width: 350px;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+        .price-card.featured { border-color: var(--accent); }
+        .price-card h4 { font-size: 1rem; color: var(--accent); margin-bottom: 1rem; }
+        .price-card .price { font-size: 3rem; font-weight: 800; margin-bottom: 2rem; }
+        .price-card ul { list-style: none; color: var(--text-muted); }
+        .price-card ul li { margin-bottom: 1rem; display: flex; align-items: center; }
+        .price-card ul li::before { content: '✓'; color: var(--accent); margin-right: 0.5rem; }
+
+        .contact-box {
+            margin-top: 4rem;
+            padding: 2rem;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            display: inline-block;
+        }
+        .contact-box a { color: var(--accent); text-decoration: none; font-weight: 800; }
+
+        footer {
+            padding: 4rem 10%;
+            border-top: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 3rem; }
+            nav { padding: 1.5rem 5%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="blobs">
+        <div class="blob"></div>
+    </div>
+
+    <nav>
+        <div class="logo">ERROR<span>.AI</span></div>
+        <div class="nav-links">
+            <a href="#features">Features</a>
+            <a href="#pricing">Pricing</a>
+            <a href="/documentation">Documentation</a>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="badge">Advanced Uncensored Proxy</div>
+        <h1>Powering Your AI<br>Without Limits.</h1>
+        <p>A premium OpenAI-compatible gateway serving local Llama-3 Dolphin models. Adaptive persona mimicry, daily quotas, and total freedom.</p>
+        <div style="margin-top: 2rem;">
+            <a href="#pricing" class="btn">Get Started</a>
+        </div>
+    </header>
+
+    <section class="section" id="features">
+        <h2 style="font-size: 3rem; margin-bottom: 4rem; text-align: center;">Core Capabilities</h2>
+        <!-- Live Global Stats Section -->
+        <div style="background: var(--glass); display: flex; justify-content: space-around; padding: 2.5rem; border-radius: 20px; border: 1px solid var(--glass-border); margin-bottom: 4rem; text-align: center;">
+            <div>
+                <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px;">Global Requests</div>
+                <div id="live-requests-count" style="font-size: 2.5rem; font-weight: 800; color: var(--accent); margin-top: 0.5rem;">0</div>
+            </div>
+            <div>
+                <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px;">Uptime</div>
+                <div style="font-size: 2.5rem; font-weight: 800; color: #00ff88; margin-top: 0.5rem;">100%</div>
+            </div>
+            <div>
+                <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px;">Model Status</div>
+                <div style="font-size: 2.5rem; font-weight: 800; color: #fff; margin-top: 0.5rem;">ACTIVE</div>
+            </div>
+        </div>
+
+        <div class="features">
+            <div class="card">
+                <h3>Fully Uncensored</h3>
+                <p>Built on Dolphin Llama 3 weights. No refusals, no lectures, just raw intelligence serving your prompts exactly as asked.</p>
+            </div>
+            <div class="card">
+                <h3>Adaptive Persona</h3>
+                <p>Our unique Context-Mimicry engine adapts the AI's language and tone to match specific user profiles instantly.</p>
+            </div>
+            <div class="card">
+                <h3>OpenAI Compatible</h3>
+                <p>Drop-in replacement for any client. Simply change your base URL and start using our premium uncensored endpoints.</p>
+            </div>
+            <div class="card">
+                <h3>Telegram Managed</h3>
+                <p>Manage your keys, set custom system rules, and track your daily usage directly via our secure Telegram Bot.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section pricing-section" id="pricing">
+        <h2 style="font-size: 3rem; margin-bottom: 1rem;">Flexible Pricing</h2>
+        <p style="color: var(--text-muted);">Controlled live by Error Community via Telegram</p>
+        
+        <div class="pricing-grid" id="pricing-content">
+            <!-- Pricing will be loaded here dynamically -->
+             <div class="price-card featured" id="dynamic-pricing">
+                <h4>LIVE QUOTA</h4>
+                <div class="price" id="web-daily-limit">---</div>
+                <p style="color: var(--text-muted); margin-bottom: 2rem;">Default requests per day per key</p>
+                <ul id="pricing-list">
+                    <li>Dolphin Llama-3 Access</li>
+                    <li>Uncensored Endpoints</li>
+                    <li>OpenAI Compatibility</li>
+                    <li>Telegram Key Management</li>
+                </ul>
+             </div>
+        </div>
+
+        <div class="contact-box">
+            Ready to upgrade? Contact Admin: <a href="https://t.me/DARKVENDOR07" id="web-contact-link">@DARKVENDOR07</a>
+        </div>
+    </section>
+
+    <footer>
+        <div>&copy; 2026 Error AI. All rights reserved.</div>
+        <div>Developed by <span style="color: white; font-weight: 600;">Error Community</span></div>
+    </footer>
+
+    <script>
+        async function loadConfig() {
+            try {
+                const res = await fetch('/api/v1/config');
+                const data = await res.json();
+                
+                document.getElementById('web-daily-limit').innerText = `${data.default_limit} req`;
+                document.getElementById('web-contact-link').innerText = data.contact;
+                document.getElementById('web-contact-link').href = `https://t.me/${data.contact.replace('@', '')}`;
+                
+                // Animate requests count
+                const countEl = document.getElementById('live-requests-count');
+                const target = data.total_requests || 0;
+                let current = 0;
+                const step = Math.ceil(target / 50) || 1;
+                const timer = setInterval(() => {
+                    current += step;
+                    if (current >= target) {
+                        countEl.innerText = target.toLocaleString();
+                        clearInterval(timer);
+                    } else {
+                        countEl.innerText = current.toLocaleString();
+                    }
+                }, 20);
+                
+                if(data.pricing_html && data.pricing_html !== "Contact @DARKVENDOR07 for pricing") {
+                    // If admin provided custom pricing cards or text
+                    // We could render it here. For now, we show the default limit.
+                }
+            } catch (e) {
+                console.error("Failed to load live config", e);
+            }
+        }
+        loadConfig();
+    </script>
+</body>
+</html>

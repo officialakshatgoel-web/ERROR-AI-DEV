@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation | Error AI</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📜</text></svg>">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #050505;
+            --accent: #7c4dff;
+            --text-main: #ffffff;
+            --text-muted: #888888;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --code-bg: #111;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 10%;
+            border-bottom: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            font-size: 1.2rem;
+            font-weight: 800;
+            text-decoration: none;
+            color: white;
+        }
+
+        .logo span {
+            color: var(--accent);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 4rem auto;
+            padding: 0 5%;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            margin-bottom: 3rem;
+            font-size: 1.2rem;
+        }
+
+        section {
+            margin-bottom: 4rem;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent);
+            border-left: 4px solid var(--accent);
+            padding-left: 1rem;
+        }
+
+        .method {
+            background: var(--glass);
+            padding: 1rem;
+            border-radius: 8px;
+            display: inline-block;
+            font-weight: 800;
+            font-size: 0.8rem;
+            margin-right: 1rem;
+            color: #00ff88;
+        }
+
+        .url {
+            font-family: monospace;
+            color: var(--text-muted);
+        }
+
+        pre {
+            background: var(--code-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            border: 1px solid var(--glass-border);
+            color: #d1d1d1;
+            font-family: 'Courier New', Courier, monospace;
+            position: relative;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: var(--text-muted);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .copy-btn:hover {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        code {
+            color: var(--accent);
+        }
+
+
+        .info-box {
+            border-left: 4px solid #ffcc00;
+            background: rgba(255, 204, 0, 0.05);
+            padding: 1.5rem;
+            border-radius: 0 10px 10px 0;
+            margin: 2rem 0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 4rem;
+            border-top: 1px solid var(--glass-border);
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <a href="/" class="logo">ERROR<span>.AI</span></a>
+        <div>
+            <a href="/" style="color: var(--text-muted); text-decoration: none; font-size: 0.9rem;">Back to Home</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header>
+            <h1>API Documentation</h1>
+            <p class="subtitle">Integration guide for Error AI endpoints.</p>
+        </header>
+
+        <section>
+            <h2>Getting Started</h2>
+            <p>To use the Error AI, you must first generate an API Key using our official Telegram Bot. Your key acts as
+                a Bearer token for all requests.</p>
+            <div class="info-box">
+                <strong>Base URL:</strong> <code>https://example.com</code>
+            </div>
+        </section>
+
+        <section>
+            <h2>Authentication</h2>
+            <p>All API requests must include the <code>Authorization</code> header with your Bearer token.</p>
+            <pre>Authorization: Bearer railway-YOUR_API_KEY<button class="copy-btn" onclick="copyCode(this)">Copy</button></pre>
+        </section>
+
+        <section>
+            <h2>Chat Completions</h2>
+            <p>Our main endpoint is fully OpenAI compatible. You can use it with any standard library (OpenAI Python,
+                LangChain, etc.).</p>
+            <div style="margin: 1rem 0;">
+                <span class="method">POST</span> <span class="url">/v1/chat/completions</span>
+            </div>
+            <p><strong>Example Request (cURL):</strong></p>
+            <pre>
+curl https://example.com/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_KEY" \
+  -d '{
+    "model": "dolphin-llama3",
+    "messages": [{"role": "user", "content": "Hello, Errro!"}],
+    "stream": false
+  }'<button class="copy-btn" onclick="copyCode(this)">Copy</button></pre>
+        </section>
+
+        <section>
+            <h2>Adaptive Persona</h2>
+            <p>Update your AI's speaking style and context dynamically. This will affect all subsequent chat completions
+                for the provided key.</p>
+            <div style="margin: 1rem 0;">
+                <span class="method">POST</span> <span class="url">/api/v1/persona</span>
+            </div>
+            <pre>
+{
+  "persona_context": "The user is a sarcastic hacker who loves 1990s cyberpunk terminology."
+}<button class="copy-btn" onclick="copyCode(this)">Copy</button></pre>
+        </section>
+
+        <section>
+            <h2>Model Info</h2>
+            <p>Currently serving: <strong>Dolphin Llama-3 (Uncensored)</strong>.</p>
+            <p>Model ID: <code>dolphin-llama3</code></p>
+        </section>
+    </div>
+
+    <script>
+        function copyCode(btn) {
+            const pre = btn.parentElement;
+            const textToCopy = pre.innerText.replace('Copy', '').trim();
+
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                btn.innerText = 'Copied!';
+                setTimeout(() => {
+                    btn.innerText = 'Copy';
+                }, 2000);
+            });
+        }
+    </script>
+
+    <footer>
+        &copy; 2026 Error AI. Created by Error Community.
+    </footer>
+</body>
+
+</html>
