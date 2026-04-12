@@ -39,22 +39,22 @@ class InstructionStates(StatesGroup):
 async def send_welcome(message: types.Message):
     admin_commands = (
         "\n\n👑 *Admin Commands*:\n"
-        "/add_admin <id> - Add new admin\n"
-        "/del_admin <id> - Remove admin\n"
-        "/list_users - View all users & usage\n"
-        "/set_price <text> - Update Pricing on Web\n"
-        "/set_contact <user> - Update Contact on Web\n"
-        "/set_limit <num> - Default Daily Quota\n"
-        "/user_limit <id> <num> - Custom Limit for User\n"
-        "/admin_stats - Full system stats\n"
+        "/addadmin <id> - Add new admin\n"
+        "/deladmin <id> - Remove admin\n"
+        "/listusers - View all users & usage\n"
+        "/setprice <text> - Update Pricing on Web\n"
+        "/setcontact <user> - Update Contact on Web\n"
+        "/setlimit <num> - Default Daily Quota\n"
+        "/userlimit <id> <num> - Custom Limit for User\n"
+        "/adminstats - Full system stats\n"
         "/backup - Get Database Backup"
     )
 
     await message.answer(
         f"Welcome to the Error AI Bot! 🤖\n\n"
         "Commands:\n"
-        "/generate_key - Get a new API Key\n"
-        "/list_keys - See your active keys & usage\n"
+        "/generatekey - Get a new API Key\n"
+        "/listkeys - See your active keys & usage\n"
         "/instructions - ⚙️ Set Custom AI Instructions (About you & Behavior)\n"
         "/stats - Your usage stats\n"
         "/revoke <key> - Deactivate a key" + admin_commands,
@@ -107,7 +107,7 @@ async def process_behavior(message: types.Message, state: FSMContext):
         db.close()
         await state.clear()
 
-@dp.message(Command("add_admin"))
+@dp.message(Command("addadmin"))
 async def handle_add_admin(message: types.Message):
     # Admin check removed
     try:
@@ -115,9 +115,9 @@ async def handle_add_admin(message: types.Message):
         add_new_admin(new_admin_id)
         await message.answer(f"✅ User {new_admin_id} is now an admin.")
     except Exception:
-        await message.answer("Usage: /add_admin <telegram_id>")
+        await message.answer("Usage: /addadmin <telegram_id>")
 
-@dp.message(Command("del_admin"))
+@dp.message(Command("deladmin"))
 async def handle_del_admin(message: types.Message):
     # Admin check removed
     try:
@@ -128,9 +128,9 @@ async def handle_del_admin(message: types.Message):
         else:
             await message.answer("❌ Cannot remove this admin (it might be the root admin).")
     except Exception:
-        await message.answer("Usage: /del_admin <telegram_id>")
+        await message.answer("Usage: /deladmin <telegram_id>")
 
-@dp.message(Command("list_users"))
+@dp.message(Command("listusers"))
 async def handle_list_users(message: types.Message):
     # Admin check removed
     users = get_all_users_with_stats()
@@ -149,21 +149,21 @@ async def handle_list_users(message: types.Message):
     else:
         await message.answer(text, parse_mode="Markdown")
 
-@dp.message(Command("set_price"))
+@dp.message(Command("setprice"))
 async def handle_set_price(message: types.Message):
     # Admin check removed
-    text = message.text.replace("/set_price", "").strip()
+    text = message.text.replace("/setprice", "").strip()
     update_settings(pricing=text)
     await message.answer("✅ Web pricing updated!")
 
-@dp.message(Command("set_contact"))
+@dp.message(Command("setcontact"))
 async def handle_set_contact(message: types.Message):
     # Admin check removed
-    text = message.text.replace("/set_contact", "").strip()
+    text = message.text.replace("/setcontact", "").strip()
     update_settings(contact=text)
     await message.answer(f"✅ Web contact updated to {text}")
 
-@dp.message(Command("set_limit"))
+@dp.message(Command("setlimit"))
 async def handle_set_limit(message: types.Message):
     # Admin check removed
     try:
@@ -171,9 +171,9 @@ async def handle_set_limit(message: types.Message):
         update_settings(limit=limit)
         await message.answer(f"✅ Default daily limit set to {limit}")
     except Exception:
-        await message.answer("Usage: /set_limit <number>")
+        await message.answer("Usage: /setlimit <number>")
 
-@dp.message(Command("user_limit"))
+@dp.message(Command("userlimit"))
 async def handle_user_limit(message: types.Message):
     # Admin check removed
     try:
@@ -194,7 +194,7 @@ async def handle_user_limit(message: types.Message):
         finally:
             db.close()
     except Exception:
-        await message.answer("Usage: /user_limit <telegram_id> <limit>")
+        await message.answer("Usage: /userlimit <telegram_id> <limit>")
 
 from aiogram.types import FSInputFile
 
@@ -211,7 +211,7 @@ async def handle_backup(message: types.Message):
     else:
         await message.answer("❌ Database file not found.")
 
-@dp.message(Command("admin_stats"))
+@dp.message(Command("adminstats"))
 
 async def handle_admin_stats(message: types.Message):
     # Admin check removed
@@ -250,7 +250,7 @@ async def handle_stats(message: types.Message):
     finally:
         db.close()
 
-@dp.message(Command("generate_key"))
+@dp.message(Command("generatekey"))
 async def handle_generate_key(message: types.Message):
     user_id = message.from_user.id
     db = SessionLocal()
@@ -267,7 +267,7 @@ async def handle_generate_key(message: types.Message):
     finally:
         db.close()
 
-@dp.message(Command("list_keys"))
+@dp.message(Command("listkeys"))
 async def handle_list_keys(message: types.Message):
     user_id = message.from_user.id
     db = SessionLocal()
