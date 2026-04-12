@@ -2,16 +2,17 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install dependencies and curl for Ollama
+# Install dependencies
 RUN apt-get update && apt-get install -y \
     curl \
     ca-certificates \
     pciutils \
+    zstd \
+    procps \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Ollama directly (more robust in Docker)
-RUN curl -L https://ollama.com/download/ollama-linux-amd64 -o /usr/bin/ollama && \
-    chmod +x /usr/bin/ollama
+# Install Ollama using the official script (now that zstd is available)
+RUN curl -fsSL https://ollama.com/install.sh | sh
 
 # Set environment variables for Python
 ENV PYTHONDONTWRITEBYTECODE 1
