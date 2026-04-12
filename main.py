@@ -60,6 +60,7 @@ class PersonaRequest(BaseModel):
 class PublicChatRequest(BaseModel):
     message: str
     style: str = "Default"
+    history: list = []  # Optional chat history for context
 
 # --- RATE LIMITER ---
 public_chat_limits = {} # simple {ip: last_timestamp}
@@ -179,7 +180,8 @@ async def list_models():
 @app.post("/api/v1/chat", tags=["Public Chat"])
 async def public_chat(request: Request, body: PublicChatRequest):
     """
-    Public chat endpoint for the website.
+    Public streaming chat endpoint for the website (SSE).
+    Returns tokens letter-by-letter as they are generated.
     """
     ip = request.client.host
     now = time.time()
@@ -200,14 +202,37 @@ async def public_chat(request: Request, body: PublicChatRequest):
     
     style_prompt = styles.get(body.style, styles["Default"])
     
-    # Call AI
-    content = await generate_ai_response(
-        [{"role": "user", "content": body.message}],
+    # Build conversation history
+    messages = []
+    for h in body.history:
+        if isinstance(h, dict) and "role" in h and "content" in h:
+            messages.append({"role": h["role"], "content": h["content"]})
+    messages.append({"role": "user", "content": body.message})
+    
+    # Stream AI response via SSE
+    stream_gen = await generate_ai_response(
+        messages,
         custom_system_prompt=style_prompt,
-        stream=False
+        stream=True
     )
     
-    return {"content": content}
+    async def event_generator():
+        try:
+            async for token in stream_gen:
+                data = json.dumps({"token": token})
+                yield f"data: {data}\n\n"
+            yield "data: [DONE]\n\n"
+        except Exception as e:
+            yield f"data: {json.dumps({'error': str(e)})}\n\n"
+    
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no"
+        }
+    )
 
 @app.post("/api/v1/persona", tags=["Admin & Context"])
 
