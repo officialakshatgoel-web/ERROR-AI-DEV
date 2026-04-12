@@ -57,10 +57,14 @@ class ChatCompletionRequest(BaseModel):
 class PersonaRequest(BaseModel):
     persona_context: str
 
+class HistoryMessage(BaseModel):
+    role: str
+    content: str
+
 class PublicChatRequest(BaseModel):
     message: str
     style: str = "Default"
-    history: list = []  # Optional chat history for context
+    history: list[HistoryMessage] = []  # Strongly typed conversation history
 
 # --- RATE LIMITER ---
 public_chat_limits = {} # simple {ip: last_timestamp}
@@ -202,11 +206,10 @@ async def public_chat(request: Request, body: PublicChatRequest):
     
     style_prompt = styles.get(body.style, styles["Default"])
     
-    # Build conversation history
+    # Build conversation history (typed HistoryMessage objects)
     messages = []
-    for h in body.history:
-        if isinstance(h, dict) and "role" in h and "content" in h:
-            messages.append({"role": h["role"], "content": h["content"]})
+    for h in body.history[-20:]:  # Keep last 20 turns max
+        messages.append({"role": h.role, "content": h.content})
     messages.append({"role": "user", "content": body.message})
     
     # Stream AI response via SSE
