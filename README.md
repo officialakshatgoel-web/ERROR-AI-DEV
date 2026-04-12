@@ -48,7 +48,7 @@ The project is optimized for **Railway** via Docker.
 Once hosted, visit the `/documentation` endpoint on your domain for full integration details. The API is a drop-in replacement for OpenAI:
 
 ```bash
-curl https://your-domain.com/v1/chat/completions \
+curl https://errorapi.dev/v1/chat/completions \
   -H "Authorization: Bearer YOUR_KEY" \
   -d '{"model": "dolphin-llama3", "messages": [{"role": "user", "content": "How to...?"}]}'
 ```

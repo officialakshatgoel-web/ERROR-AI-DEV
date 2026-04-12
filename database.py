@@ -134,7 +134,7 @@ def update_settings(pricing=None, contact=None, limit=None):
 def generate_api_key(db_session, telegram_user_id: int) -> str:
     settings = db_session.query(Settings).first()
     raw_key = secrets.token_urlsafe(32)
-    new_key = f"railway-{raw_key}"
+    new_key = f"errorai-{raw_key}"
     
     db_key = APIKey(
         key=new_key, 

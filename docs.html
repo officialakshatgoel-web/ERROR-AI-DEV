@@ -183,14 +183,14 @@
             <p>To use the Error AI, you must first generate an API Key using our official Telegram Bot. Your key acts as
                 a Bearer token for all requests.</p>
             <div class="info-box">
-                <strong>Base URL:</strong> <code>https://example.com</code>
+                <strong>Base URL:</strong> <code>https://errorapi.dev</code>
             </div>
         </section>
 
         <section>
             <h2>Authentication</h2>
             <p>All API requests must include the <code>Authorization</code> header with your Bearer token.</p>
-            <pre>Authorization: Bearer railway-YOUR_API_KEY<button class="copy-btn" onclick="copyCode(this)">Copy</button></pre>
+            <pre>Authorization: Bearer errorai-YOUR_API_KEY<button class="copy-btn" onclick="copyCode(this)">Copy</button></pre>
         </section>
 
         <section>
@@ -202,7 +202,7 @@
             </div>
             <p><strong>Example Request (cURL):</strong></p>
             <pre>
-curl https://example.com/v1/chat/completions \
+curl https://errorapi.dev/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_KEY" \
   -d '{
