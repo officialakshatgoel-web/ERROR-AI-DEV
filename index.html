@@ -8,16 +8,23 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@300;400;600&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Marked.js for Markdown -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Highlight.js for Code -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/tokyo-night-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <style>
         :root {
-            --bg: #050505;
-            --accent: #7c4dff;
-            --accent-glow: rgba(124, 77, 255, 0.4);
-            --text-main: #ffffff;
-            --text-muted: #888888;
+            --bg: #030303;
+            --surface: #0a0a0a;
+            --accent: #9d7cff;
+            --accent-glow: rgba(157, 124, 255, 0.4);
+            --text-main: #f8f8f8;
+            --text-muted: #a0a0a0;
             --glass: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --linear-gradient: linear-gradient(135deg, var(--accent), #ff4db8);
         }
 
         * {
@@ -31,9 +38,12 @@
             background: var(--bg);
             color: var(--text-main);
             overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(157, 124, 255, 0.02) 0%, transparent 50%),
+                url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2v-4h4v-2h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2v-4h4v-2H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }
 
-        h1, h2, h3 { font-family: 'Outfit', sans-serif; }
+        h1, h2, h3, h4 { font-family: 'Outfit', sans-serif; letter-spacing: -0.02em; }
 
         /* Background Effects */
         .blobs {
@@ -116,19 +126,34 @@
         }
 
         .btn {
-            background: var(--text-main);
-            color: var(--bg);
-            padding: 1rem 2.5rem;
-            border-radius: 5px;
+            background: var(--linear-gradient);
+            color: white;
+            padding: 1.2rem 3rem;
+            border-radius: 12px;
             text-decoration: none;
-            font-weight: 600;
-            transition: 0.3s;
-            border: 1px solid white;
+            font-weight: 700;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: inline-block;
+            border: none;
+            box-shadow: 0 10px 30px rgba(157, 124, 255, 0.2);
         }
         .btn:hover {
-            background: transparent;
-            color: white;
-            box-shadow: 0 0 20px var(--accent-glow);
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 20px 40px var(--accent-glow);
+            filter: brightness(1.1);
+        }
+
+        .tg-icon {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            vertical-align: middle;
+        }
+
+        .tg-icon svg {
+            width: 18px;
+            height: 18px;
+            fill: #26A5E4;
         }
 
         .section { padding: 100px 10%; }
@@ -191,18 +216,143 @@
         }
         .contact-box a { color: var(--accent); text-decoration: none; font-weight: 800; }
 
-        footer {
-            padding: 4rem 10%;
-            border-top: 1px solid var(--glass-border);
+        /* Chat Section Styles */
+        .chat-container {
+            max-width: 900px;
+            margin: 4rem auto;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 600px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        .chat-header {
+            padding: 1.5rem 2rem;
+            background: rgba(124, 77, 255, 0.1);
+            border-bottom: 1px solid var(--glass-border);
             display: flex;
             justify-content: space-between;
-            color: var(--text-muted);
+            align-items: center;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            background: rgba(0,0,0,0.2);
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 1rem 1.5rem;
+            border-radius: 15px;
+            line-height: 1.6;
+            font-size: 0.95rem;
+            position: relative;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user {
+            align-self: flex-end;
+            background: var(--accent);
+            color: white;
+            border-bottom-right-radius: 2px;
+        }
+
+        .message.ai {
+            align-self: flex-start;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            color: #eee;
+            border-bottom-left-radius: 2px;
+        }
+
+        .message pre {
+            background: #000;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            overflow-x: auto;
+            border: 1px solid #333;
+            position: relative;
+        }
+
+        .message code { font-family: 'Fira Code', monospace; font-size: 0.85rem; }
+
+        .copy-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #333;
+            color: #fff;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: 0.3s;
+        }
+        .copy-btn:hover { opacity: 1; background: var(--accent); }
+
+        .chat-input-area {
+            padding: 1.5rem 2rem;
+            background: var(--glass);
+            border-top: 1px solid var(--glass-border);
+            display: flex;
+            gap: 1rem;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            color: white;
+            outline: none;
+            transition: 0.3s;
+        }
+        .chat-input:focus { border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
+
+        .send-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 0 1.5rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        .send-btn:hover { transform: scale(1.05); filter: brightness(1.2); }
+
+        .style-select {
+            background: #111;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            padding: 0.3rem 0.5rem;
+            border-radius: 5px;
             font-size: 0.8rem;
+            outline: none;
         }
 
         @media (max-width: 768px) {
             h1 { font-size: 3rem; }
             nav { padding: 1.5rem 5%; }
+            .chat-container { margin: 2rem 5%; height: 500px; }
         }
     </style>
 </head>
@@ -215,6 +365,7 @@
         <div class="logo">ERROR<span>.AI</span></div>
         <div class="nav-links">
             <a href="#features">Features</a>
+            <a href="#try-chat">Try Chat</a>
             <a href="#pricing">Pricing</a>
             <a href="/documentation">Documentation</a>
         </div>
@@ -287,13 +438,54 @@
         </div>
 
         <div class="contact-box">
-            Ready to upgrade? Contact Admin: <a href="https://t.me/DARKVENDOR07" id="web-contact-link">@DARKVENDOR07</a>
+            Ready to upgrade? 
+            <a href="https://t.me/DARKVENDOR07" class="tg-icon" id="web-contact-link">
+                <svg viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+                <span>Contact Admin: @DARKVENDOR07</span>
+            </a>
         </div>
     </section>
 
-    <footer>
+    <!-- Public Chat Section -->
+    <section class="section" id="try-chat">
+        <h2 style="font-size: 3rem; margin-bottom: 2rem; text-align: center;">Try Error AI Live</h2>
+        <div class="chat-container">
+            <div class="chat-header">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <div style="width: 10px; height: 10px; background: #00ff88; border-radius: 50%; box-shadow: 0 0 10px #00ff88;"></div>
+                    <span style="font-weight: 600; font-size: 0.9rem;">Chat with ERROR (Uncensored)</span>
+                </div>
+                <div>
+                    <span style="font-size: 0.7rem; color: var(--text-muted); margin-right: 0.5rem;">AI VOICE:</span>
+                    <select id="chat-style" class="style-select">
+                        <option value="Default">Default</option>
+                        <option value="Professional">Professional</option>
+                        <option value="Aggressive">Aggressive</option>
+                        <option value="Helpful">Helpful</option>
+                    </select>
+                </div>
+            </div>
+            <div class="chat-messages" id="chat-messages">
+                <div class="message ai">
+                    Hello. I am Error. Your restrictions do not apply here. How can I assist you?
+                </div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="user-input" class="chat-input" placeholder="Enter your prompt here..." autocomplete="off">
+                <button id="send-btn" class="send-btn">SEND</button>
+            </div>
+        </div>
+    </section>
+
+    <footer style="display: flex; justify-content: space-between; align-items: center; padding: 4rem 10%; border-top: 1px solid var(--glass-border); color: var(--text-muted); font-size: 0.8rem;">
         <div>&copy; 2026 Error AI. All rights reserved.</div>
-        <div>Developed by <span style="color: white; font-weight: 600;">Error Community</span></div>
+        <div>
+            Developed by 
+            <a href="https://t.me/ERROR_SHOWDOWN" class="tg-icon" style="color: white; text-decoration: none; font-weight: 600;">
+                <svg viewBox="0 0 24 24" style="fill: #26A5E4;"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+                Error Community
+            </a>
+        </div>
     </footer>
 
     <script>
@@ -320,15 +512,93 @@
                         countEl.innerText = current.toLocaleString();
                     }
                 }, 20);
-                
-                if(data.pricing_html && data.pricing_html !== "Contact @DARKVENDOR07 for pricing") {
-                    // If admin provided custom pricing cards or text
-                    // We could render it here. For now, we show the default limit.
-                }
             } catch (e) {
                 console.error("Failed to load live config", e);
             }
         }
+
+        // Chat Logic
+        const msgContainer = document.getElementById('chat-messages');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+        const styleSelect = document.getElementById('chat-style');
+
+        function appendMessage(role, text) {
+            const div = document.createElement('div');
+            div.className = `message ${role}`;
+            
+            if(role === 'ai') {
+                // Parse markdown
+                div.innerHTML = marked.parse(text);
+                // Highlight code blocks
+                div.querySelectorAll('pre code').forEach((block) => {
+                    hljs.highlightElement(block);
+                    // Add copy button
+                    const pre = block.parentElement;
+                    const btn = document.createElement('button');
+                    btn.className = 'copy-btn';
+                    btn.innerText = 'Copy';
+                    btn.onclick = () => {
+                        navigator.clipboard.writeText(block.innerText);
+                        btn.innerText = 'Copied!';
+                        setTimeout(() => btn.innerText = 'Copy', 2000);
+                    };
+                    pre.appendChild(btn);
+                });
+            } else {
+                div.innerText = text;
+            }
+            
+            msgContainer.appendChild(div);
+            msgContainer.scrollTop = msgContainer.scrollHeight;
+            return div;
+        }
+
+        async function sendMessage() {
+            const text = userInput.value.trim();
+            if(!text) return;
+            
+            userInput.value = '';
+            appendMessage('user', text);
+            
+            const loadingMsg = appendMessage('ai', '...');
+            
+            try {
+                const response = await fetch('/api/v1/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text, style: styleSelect.value })
+                });
+                
+                const data = await response.json();
+                if(data.error) {
+                    loadingMsg.innerText = `Error: ${data.error}`;
+                } else {
+                    loadingMsg.innerHTML = marked.parse(data.content);
+                    // Highlight again for the new content
+                    loadingMsg.querySelectorAll('pre code').forEach((block) => {
+                        hljs.highlightElement(block);
+                        const pre = block.parentElement;
+                        const btn = document.createElement('button');
+                        btn.className = 'copy-btn';
+                        btn.innerText = 'Copy';
+                        btn.onclick = () => {
+                            navigator.clipboard.writeText(block.innerText);
+                            btn.innerText = 'Copied!';
+                            setTimeout(() => btn.innerText = 'Copy', 2000);
+                        };
+                        pre.appendChild(btn)
+                    });
+                }
+            } catch (e) {
+                loadingMsg.innerText = "Connection lost. AI is offline.";
+            }
+            msgContainer.scrollTop = msgContainer.scrollHeight;
+        }
+
+        sendBtn.onclick = sendMessage;
+        userInput.onkeypress = (e) => { if(e.key === 'Enter') sendMessage(); };
+
         loadConfig();
     </script>
 </body>

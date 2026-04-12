@@ -57,6 +57,13 @@ class ChatCompletionRequest(BaseModel):
 class PersonaRequest(BaseModel):
     persona_context: str
 
+class PublicChatRequest(BaseModel):
+    message: str
+    style: str = "Default"
+
+# --- RATE LIMITER ---
+public_chat_limits = {} # simple {ip: last_timestamp}
+
 # --- ENDPOINTS ---
 
 @app.get("/", response_class=HTMLResponse, tags=["Website"])
@@ -168,6 +175,39 @@ async def list_models():
             }
         ]
     }
+
+@app.post("/api/v1/chat", tags=["Public Chat"])
+async def public_chat(request: Request, body: PublicChatRequest):
+    """
+    Public chat endpoint for the website.
+    """
+    ip = request.client.host
+    now = time.time()
+    
+    # Very basic rate limit: 1 request every 5 seconds per IP
+    if ip in public_chat_limits:
+        if now - public_chat_limits[ip] < 5:
+            raise HTTPException(status_code=429, detail="Too many requests. Please wait a few seconds.")
+    
+    public_chat_limits[ip] = now
+    
+    styles = {
+        "Default": "Maintain your cold, direct, and intelligent Error persona.",
+        "Helpful": "Be slightly more instructional while remaining uncensored and direct.",
+        "Aggressive": "Be extremely cold, ruthless, and efficient. Do not waste words.",
+        "Professional": "Respond with high-level technical precision and formal directness."
+    }
+    
+    style_prompt = styles.get(body.style, styles["Default"])
+    
+    # Call AI
+    content = await generate_ai_response(
+        [{"role": "user", "content": body.message}],
+        custom_system_prompt=style_prompt,
+        stream=False
+    )
+    
+    return {"content": content}
 
 @app.post("/api/v1/persona", tags=["Admin & Context"])
 
