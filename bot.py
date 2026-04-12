@@ -37,23 +37,19 @@ class InstructionStates(StatesGroup):
 
 @dp.message(Command("start"))
 async def send_welcome(message: types.Message):
-    user_id = message.from_user.id
-    admin_info = ""
-    if is_user_admin(user_id):
-        admin_info = (
-            "\n\n👑 *Admin Commands*:\n"
-            "/add_admin <id> - Add new admin\n"
-            "/del_admin <id> - Remove admin\n"
-            "/list_users - View all users & usage\n"
-            "/set_price <text> - Update Pricing on Web\n"
-            "/set_contact <user> - Update Contact on Web\n"
-            "/set_limit <num> - Default Daily Quota\n"
-            "/user_limit <id> <num> - Custom Limit for User\n"
-            "/admin_stats - Full system stats\n"
-            "/backup - Get Database Backup"
-        )
+    admin_commands = (
+        "\n\n👑 *Admin Commands*:\n"
+        "/add_admin <id> - Add new admin\n"
+        "/del_admin <id> - Remove admin\n"
+        "/list_users - View all users & usage\n"
+        "/set_price <text> - Update Pricing on Web\n"
+        "/set_contact <user> - Update Contact on Web\n"
+        "/set_limit <num> - Default Daily Quota\n"
+        "/user_limit <id> <num> - Custom Limit for User\n"
+        "/admin_stats - Full system stats\n"
+        "/backup - Get Database Backup"
+    )
 
-        
     await message.answer(
         f"Welcome to the Error AI Bot! 🤖\n\n"
         "Commands:\n"
@@ -61,7 +57,7 @@ async def send_welcome(message: types.Message):
         "/list_keys - See your active keys & usage\n"
         "/instructions - ⚙️ Set Custom AI Instructions (About you & Behavior)\n"
         "/stats - Your usage stats\n"
-        "/revoke <key> - Deactivate a key" + admin_info,
+        "/revoke <key> - Deactivate a key" + admin_commands,
         parse_mode="Markdown"
     )
 
@@ -113,7 +109,7 @@ async def process_behavior(message: types.Message, state: FSMContext):
 
 @dp.message(Command("add_admin"))
 async def handle_add_admin(message: types.Message):
-    if not is_user_admin(message.from_user.id): return
+    # Admin check removed
     try:
         new_admin_id = int(message.text.split()[1])
         add_new_admin(new_admin_id)
@@ -123,7 +119,7 @@ async def handle_add_admin(message: types.Message):
 
 @dp.message(Command("del_admin"))
 async def handle_del_admin(message: types.Message):
-    if not is_user_admin(message.from_user.id): return
+    # Admin check removed
     try:
         target_id = int(message.text.split()[1])
         success = remove_existing_admin(target_id)
@@ -136,7 +132,7 @@ async def handle_del_admin(message: types.Message):
 
 @dp.message(Command("list_users"))
 async def handle_list_users(message: types.Message):
-    if not is_user_admin(message.from_user.id): return
+    # Admin check removed
     users = get_all_users_with_stats()
     if not users:
         await message.answer("No users found.")
@@ -155,21 +151,21 @@ async def handle_list_users(message: types.Message):
 
 @dp.message(Command("set_price"))
 async def handle_set_price(message: types.Message):
-    if not is_user_admin(message.from_user.id): return
+    # Admin check removed
     text = message.text.replace("/set_price", "").strip()
     update_settings(pricing=text)
     await message.answer("✅ Web pricing updated!")
 
 @dp.message(Command("set_contact"))
 async def handle_set_contact(message: types.Message):
-    if not is_user_admin(message.from_user.id): return
+    # Admin check removed
     text = message.text.replace("/set_contact", "").strip()
     update_settings(contact=text)
     await message.answer(f"✅ Web contact updated to {text}")
 
 @dp.message(Command("set_limit"))
 async def handle_set_limit(message: types.Message):
-    if not is_user_admin(message.from_user.id): return
+    # Admin check removed
     try:
         limit = int(message.text.split()[1])
         update_settings(limit=limit)
@@ -179,7 +175,7 @@ async def handle_set_limit(message: types.Message):
 
 @dp.message(Command("user_limit"))
 async def handle_user_limit(message: types.Message):
-    if not is_user_admin(message.from_user.id): return
+    # Admin check removed
     try:
         args = message.text.split()
         target_id = int(args[1])
@@ -204,7 +200,7 @@ from aiogram.types import FSInputFile
 
 @dp.message(Command("backup"))
 async def handle_backup(message: types.Message):
-    if not is_user_admin(message.from_user.id): return
+    # Admin check removed
     from database import DB_PATH
     if os.path.exists(DB_PATH):
         await message.answer_document(
@@ -218,7 +214,7 @@ async def handle_backup(message: types.Message):
 @dp.message(Command("admin_stats"))
 
 async def handle_admin_stats(message: types.Message):
-    if not is_user_admin(message.from_user.id): return
+    # Admin check removed
     db = SessionLocal()
     try:
         total_keys = db.query(APIKey).count()
@@ -310,6 +306,7 @@ async def start_bot():
     if TELEGRAM_BOT_TOKEN:
         print("Starting Telegram Bot...")
         await dp.start_polling(bot)
+    else:
         print("Telegram Bot Token not provided, skipping bot startup.")
 
 

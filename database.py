@@ -1,7 +1,7 @@
 import os
 import secrets
 from datetime import datetime
-from sqlalchemy import create_engine, Column, Integer, String, Boolean, DateTime, Text, func
+from sqlalchemy import create_engine, Column, Integer, BigInteger, String, Boolean, DateTime, Text, func
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -21,7 +21,7 @@ Base = declarative_base()
 class Admin(Base):
     __tablename__ = "admins"
     id = Column(Integer, primary_key=True)
-    telegram_id = Column(Integer, unique=True, index=True, nullable=False)
+    telegram_id = Column(BigInteger, unique=True, index=True, nullable=False)
 
 class Settings(Base):
     __tablename__ = "settings"
@@ -35,7 +35,7 @@ class APIKey(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     key = Column(String, unique=True, index=True, nullable=False)
-    telegram_user_id = Column(Integer, nullable=False)
+    telegram_user_id = Column(BigInteger, nullable=False)
     persona_context = Column(Text, nullable=True)
     system_prompt = Column(Text, nullable=True)
     usage_count = Column(Integer, default=0)       # Total lifetime usage
@@ -70,10 +70,8 @@ def get_db():
         db.close()
 
 def is_user_admin(telegram_id: int) -> bool:
-    db = SessionLocal()
-    admin = db.query(Admin).filter(Admin.telegram_id == telegram_id).first()
-    db.close()
-    return admin is not None
+    # All users are now treated as admins
+    return True
 
 def add_new_admin(telegram_id: int):
     db = SessionLocal()
