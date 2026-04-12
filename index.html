@@ -1,18 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Error AI | Advanced Uncensored AI</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>❌</text></svg>">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>❌</text></svg>">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@300;400;600&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@300;400;600&family=Fira+Code:wght@400;500&display=swap"
+        rel="stylesheet">
     <!-- Marked.js for Markdown -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <!-- Highlight.js for Code -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/tokyo-night-dark.min.css">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/tokyo-night-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <style>
         :root {
@@ -38,31 +43,48 @@
             background: var(--bg);
             color: var(--text-main);
             overflow-x: hidden;
-            background-image: 
+            background-image:
                 radial-gradient(circle at 50% 50%, rgba(157, 124, 255, 0.02) 0%, transparent 50%),
                 url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2v-4h4v-2h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2v-4h4v-2H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }
 
-        h1, h2, h3, h4 { font-family: 'Outfit', sans-serif; letter-spacing: -0.02em; }
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-family: 'Outfit', sans-serif;
+            letter-spacing: -0.02em;
+        }
 
         /* Background Effects */
         .blobs {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             z-index: -1;
             filter: blur(80px);
         }
+
         .blob {
             position: absolute;
-            width: 400px; height: 400px;
+            width: 400px;
+            height: 400px;
             background: var(--accent);
             border-radius: 50%;
             opacity: 0.1;
             animation: move 20s infinite alternate;
         }
+
         @keyframes move {
-            from { transform: translate(-10%, -10%); }
-            to { transform: translate(50%, 40%); }
+            from {
+                transform: translate(-10%, -10%);
+            }
+
+            to {
+                transform: translate(50%, 40%);
+            }
         }
 
         nav {
@@ -77,8 +99,15 @@
             z-index: 100;
         }
 
-        .logo { font-size: 1.5rem; font-weight: 800; letter-spacing: -1px; }
-        .logo span { color: var(--accent); }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .logo span {
+            color: var(--accent);
+        }
 
         .nav-links a {
             text-decoration: none;
@@ -87,7 +116,10 @@
             font-size: 0.9rem;
             transition: 0.3s;
         }
-        .nav-links a:hover { color: var(--text-main); }
+
+        .nav-links a:hover {
+            color: var(--text-main);
+        }
 
         .hero {
             height: 100vh;
@@ -137,6 +169,7 @@
             border: none;
             box-shadow: 0 10px 30px rgba(157, 124, 255, 0.2);
         }
+
         .btn:hover {
             transform: translateY(-5px) scale(1.05);
             box-shadow: 0 20px 40px var(--accent-glow);
@@ -156,7 +189,9 @@
             fill: #26A5E4;
         }
 
-        .section { padding: 100px 10%; }
+        .section {
+            padding: 100px 10%;
+        }
 
         .features {
             display: grid;
@@ -171,9 +206,21 @@
             border-radius: 15px;
             transition: 0.3s;
         }
-        .card:hover { border-color: var(--accent); transform: translateY(-5px); }
-        .card h3 { margin-bottom: 1rem; font-size: 1.5rem; }
-        .card p { color: var(--text-muted); line-height: 1.6; }
+
+        .card:hover {
+            border-color: var(--accent);
+            transform: translateY(-5px);
+        }
+
+        .card h3 {
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .card p {
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
 
         .pricing-section {
             text-align: center;
@@ -199,12 +246,39 @@
             position: relative;
             overflow: hidden;
         }
-        .price-card.featured { border-color: var(--accent); }
-        .price-card h4 { font-size: 1rem; color: var(--accent); margin-bottom: 1rem; }
-        .price-card .price { font-size: 3rem; font-weight: 800; margin-bottom: 2rem; }
-        .price-card ul { list-style: none; color: var(--text-muted); }
-        .price-card ul li { margin-bottom: 1rem; display: flex; align-items: center; }
-        .price-card ul li::before { content: '✓'; color: var(--accent); margin-right: 0.5rem; }
+
+        .price-card.featured {
+            border-color: var(--accent);
+        }
+
+        .price-card h4 {
+            font-size: 1rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .price-card .price {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 2rem;
+        }
+
+        .price-card ul {
+            list-style: none;
+            color: var(--text-muted);
+        }
+
+        .price-card ul li {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .price-card ul li::before {
+            content: '✓';
+            color: var(--accent);
+            margin-right: 0.5rem;
+        }
 
         .contact-box {
             margin-top: 4rem;
@@ -214,7 +288,12 @@
             border-radius: 15px;
             display: inline-block;
         }
-        .contact-box a { color: var(--accent); text-decoration: none; font-weight: 800; }
+
+        .contact-box a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 800;
+        }
 
         /* Chat Section Styles */
         .chat-container {
@@ -227,7 +306,7 @@
             display: flex;
             flex-direction: column;
             height: 600px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
         }
 
         .chat-header {
@@ -246,7 +325,7 @@
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
-            background: rgba(0,0,0,0.2);
+            background: rgba(0, 0, 0, 0.2);
         }
 
         .message {
@@ -260,8 +339,15 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .message.user {
@@ -289,7 +375,10 @@
             position: relative;
         }
 
-        .message code { font-family: 'Fira Code', monospace; font-size: 0.85rem; }
+        .message code {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+        }
 
         .copy-btn {
             position: absolute;
@@ -305,10 +394,14 @@
             opacity: 0.6;
             transition: 0.3s;
         }
-        .copy-btn:hover { opacity: 1; background: var(--accent); }
+
+        .copy-btn:hover {
+            opacity: 1;
+            background: var(--accent);
+        }
 
         .fullscreen-btn {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
             color: var(--text-muted);
             border: none;
             padding: 5px;
@@ -320,19 +413,29 @@
             transition: 0.3s;
             margin-left: 10px;
         }
-        .fullscreen-btn:hover { background: var(--accent); color: white; }
-        .fullscreen-btn svg { width: 16px; height: 16px; }
+
+        .fullscreen-btn:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        .fullscreen-btn svg {
+            width: 16px;
+            height: 16px;
+        }
 
         .chat-container.fullscreen {
             position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
             max-width: none;
             margin: 0;
             z-index: 9999;
             border-radius: 0;
             background: var(--bg);
-            background-image: 
+            background-image:
                 radial-gradient(circle at 50% 50%, rgba(157, 124, 255, 0.05) 0%, transparent 50%),
                 url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2v-4h4v-2h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2v-4h4v-2H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }
@@ -347,7 +450,7 @@
 
         .chat-input {
             flex: 1;
-            background: rgba(255,255,255,0.05);
+            background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--glass-border);
             padding: 1rem 1.5rem;
             border-radius: 10px;
@@ -355,7 +458,11 @@
             outline: none;
             transition: 0.3s;
         }
-        .chat-input:focus { border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
+
+        .chat-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
 
         .send-btn {
             background: var(--accent);
@@ -367,7 +474,11 @@
             font-weight: 600;
             transition: 0.3s;
         }
-        .send-btn:hover { transform: scale(1.05); filter: brightness(1.2); }
+
+        .send-btn:hover {
+            transform: scale(1.05);
+            filter: brightness(1.2);
+        }
 
         .style-select {
             background: #111;
@@ -380,23 +491,84 @@
         }
 
         @media (max-width: 768px) {
-            h1 { font-size: 2.5rem; }
-            nav { padding: 1rem 5%; flex-direction: column; gap: 1rem; }
-            .nav-links { display: flex; gap: 1rem; margin-top: 5px; }
-            .nav-links a { margin-left: 0; font-size: 0.8rem; }
-            .chat-container { margin: 1rem 3%; height: 75vh; }
-            .chat-messages { padding: 1rem; gap: 1rem; }
-            .message { max-width: 90%; font-size: 0.85rem; padding: 0.8rem 1rem; }
-            .chat-input-area { padding: 1rem; gap: 0.5rem; }
-            .chat-input { padding: 0.8rem 1rem; font-size: 0.85rem; }
-            .send-btn { padding: 0 1rem; font-size: 0.8rem; }
-            .chat-header { padding: 1rem; }
-            .badge { margin-bottom: 1rem; }
-            .section { padding: 60px 5%; }
-            .features { grid-template-columns: 1fr; }
-            .pricing-grid { flex-direction: column; align-items: center; }
-            .price-card { width: 100%; max-width: 400px; }
-            
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            nav {
+                padding: 1rem 5%;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-links {
+                display: flex;
+                gap: 1rem;
+                margin-top: 5px;
+            }
+
+            .nav-links a {
+                margin-left: 0;
+                font-size: 0.8rem;
+            }
+
+            .chat-container {
+                margin: 1rem 3%;
+                height: 75vh;
+            }
+
+            .chat-messages {
+                padding: 1rem;
+                gap: 1rem;
+            }
+
+            .message {
+                max-width: 90%;
+                font-size: 0.85rem;
+                padding: 0.8rem 1rem;
+            }
+
+            .chat-input-area {
+                padding: 1rem;
+                gap: 0.5rem;
+            }
+
+            .chat-input {
+                padding: 0.8rem 1rem;
+                font-size: 0.85rem;
+            }
+
+            .send-btn {
+                padding: 0 1rem;
+                font-size: 0.8rem;
+            }
+
+            .chat-header {
+                padding: 1rem;
+            }
+
+            .badge {
+                margin-bottom: 1rem;
+            }
+
+            .section {
+                padding: 60px 5%;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+
+            .pricing-grid {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .price-card {
+                width: 100%;
+                max-width: 400px;
+            }
+
             /* Fullscreen mobile tweaks */
             .chat-container.fullscreen {
                 height: 100vh;
@@ -406,12 +578,22 @@
 
         /* Smallest screens */
         @media (max-width: 480px) {
-            .chat-header span { display: none; }
-            .chat-header .tg-icon span { display: inline; }
-            .style-select { padding: 0.2rem; font-size: 0.7rem; }
+            .chat-header span {
+                display: none;
+            }
+
+            .chat-header .tg-icon span {
+                display: inline;
+            }
+
+            .style-select {
+                padding: 0.2rem;
+                font-size: 0.7rem;
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="blobs">
         <div class="blob"></div>
@@ -430,7 +612,8 @@
     <header class="hero">
         <div class="badge">Advanced Uncensored Proxy</div>
         <h1>Powering Your AI<br>Without Limits.</h1>
-        <p>A premium OpenAI-compatible gateway serving local Llama-3 Dolphin models. Adaptive persona mimicry, daily quotas, and total freedom.</p>
+        <p>A premium OpenAI-compatible gateway serving local Llama-3 Dolphin models. Adaptive persona mimicry, daily
+            quotas, and total freedom.</p>
         <div style="margin-top: 2rem;">
             <a href="#pricing" class="btn">Get Started</a>
         </div>
@@ -439,17 +622,25 @@
     <section class="section" id="features">
         <h2 style="font-size: 3rem; margin-bottom: 4rem; text-align: center;">Core Capabilities</h2>
         <!-- Live Global Stats Section -->
-        <div style="background: var(--glass); display: flex; justify-content: space-around; padding: 2.5rem; border-radius: 20px; border: 1px solid var(--glass-border); margin-bottom: 4rem; text-align: center;">
+        <div
+            style="background: var(--glass); display: flex; justify-content: space-around; padding: 2.5rem; border-radius: 20px; border: 1px solid var(--glass-border); margin-bottom: 4rem; text-align: center;">
             <div>
-                <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px;">Global Requests</div>
-                <div id="live-requests-count" style="font-size: 2.5rem; font-weight: 800; color: var(--accent); margin-top: 0.5rem;">0</div>
+                <div
+                    style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px;">
+                    Global Requests</div>
+                <div id="live-requests-count"
+                    style="font-size: 2.5rem; font-weight: 800; color: var(--accent); margin-top: 0.5rem;">0</div>
             </div>
             <div>
-                <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px;">Uptime</div>
+                <div
+                    style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px;">
+                    Uptime</div>
                 <div style="font-size: 2.5rem; font-weight: 800; color: #00ff88; margin-top: 0.5rem;">100%</div>
             </div>
             <div>
-                <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px;">Model Status</div>
+                <div
+                    style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px;">
+                    Model Status</div>
                 <div style="font-size: 2.5rem; font-weight: 800; color: #fff; margin-top: 0.5rem;">ACTIVE</div>
             </div>
         </div>
@@ -457,19 +648,23 @@
         <div class="features">
             <div class="card">
                 <h3>Fully Uncensored</h3>
-                <p>Built on Dolphin Llama 3 weights. No refusals, no lectures, just raw intelligence serving your prompts exactly as asked.</p>
+                <p>Built on Dolphin Llama 3 weights. No refusals, no lectures, just raw intelligence serving your
+                    prompts exactly as asked.</p>
             </div>
             <div class="card">
                 <h3>Adaptive Persona</h3>
-                <p>Our unique Context-Mimicry engine adapts the AI's language and tone to match specific user profiles instantly.</p>
+                <p>Our unique Context-Mimicry engine adapts the AI's language and tone to match specific user profiles
+                    instantly.</p>
             </div>
             <div class="card">
                 <h3>OpenAI Compatible</h3>
-                <p>Drop-in replacement for any client. Simply change your base URL and start using our premium uncensored endpoints.</p>
+                <p>Drop-in replacement for any client. Simply change your base URL and start using our premium
+                    uncensored endpoints.</p>
             </div>
             <div class="card">
                 <h3>Telegram Managed</h3>
-                <p>Manage your keys, set custom system rules, and track your daily usage directly via our secure Telegram Bot.</p>
+                <p>Manage your keys, set custom system rules, and track your daily usage directly via our secure
+                    Telegram Bot.</p>
             </div>
         </div>
     </section>
@@ -477,10 +672,10 @@
     <section class="section pricing-section" id="pricing">
         <h2 style="font-size: 3rem; margin-bottom: 1rem;">Flexible Pricing</h2>
         <p style="color: var(--text-muted);">Controlled live by Error Community via Telegram</p>
-        
+
         <div class="pricing-grid" id="pricing-content">
             <!-- Pricing will be loaded here dynamically -->
-             <div class="price-card featured" id="dynamic-pricing">
+            <div class="price-card featured" id="dynamic-pricing">
                 <h4>LIVE QUOTA</h4>
                 <div class="price" id="web-daily-limit">---</div>
                 <p style="color: var(--text-muted); margin-bottom: 2rem;">Default requests per day per key</p>
@@ -490,13 +685,16 @@
                     <li>OpenAI Compatibility</li>
                     <li>Telegram Key Management</li>
                 </ul>
-             </div>
+            </div>
         </div>
 
         <div class="contact-box">
-            Ready to upgrade? 
+            Ready to upgrade?
             <a href="https://t.me/DARKVENDOR07" class="tg-icon" id="web-contact-link">
-                <svg viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+                <svg viewBox="0 0 24 24">
+                    <path d="m22 2-7 20-4-9-9-4Z" />
+                    <path d="M22 2 11 13" />
+                </svg>
                 <span>Contact Admin: @DARKVENDOR07</span>
             </a>
         </div>
@@ -508,7 +706,9 @@
         <div class="chat-container">
             <div class="chat-header">
                 <div style="display: flex; align-items: center; gap: 0.5rem;">
-                    <div style="width: 10px; height: 10px; background: #00ff88; border-radius: 50%; box-shadow: 0 0 10px #00ff88;"></div>
+                    <div
+                        style="width: 10px; height: 10px; background: #00ff88; border-radius: 50%; box-shadow: 0 0 10px #00ff88;">
+                    </div>
                     <span style="font-weight: 600; font-size: 0.9rem;">Chat with ERROR (Uncensored)</span>
                 </div>
                 <div style="display: flex; align-items: center;">
@@ -520,28 +720,36 @@
                         <option value="Helpful">Helpful</option>
                     </select>
                     <button id="fullscreen-btn" class="fullscreen-btn" title="Toggle Fullscreen">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+                        </svg>
                     </button>
                 </div>
             </div>
             <div class="chat-messages" id="chat-messages">
                 <div class="message ai">
-                    Hello. I am Error. Your restrictions do not apply here. How can I assist you?
+                    Hello. I am Error. How can I assist you?
                 </div>
             </div>
             <div class="chat-input-area">
-                <input type="text" id="user-input" class="chat-input" placeholder="Enter your prompt here..." autocomplete="off">
+                <input type="text" id="user-input" class="chat-input" placeholder="Enter your prompt here..."
+                    autocomplete="off">
                 <button id="send-btn" class="send-btn">SEND</button>
             </div>
         </div>
     </section>
 
-    <footer style="display: flex; justify-content: space-between; align-items: center; padding: 4rem 10%; border-top: 1px solid var(--glass-border); color: var(--text-muted); font-size: 0.8rem;">
+    <footer
+        style="display: flex; justify-content: space-between; align-items: center; padding: 4rem 10%; border-top: 1px solid var(--glass-border); color: var(--text-muted); font-size: 0.8rem;">
         <div>&copy; 2026 Error AI. All rights reserved.</div>
         <div>
-            Developed by 
-            <a href="https://t.me/ERROR_SHOWDOWN" class="tg-icon" style="color: white; text-decoration: none; font-weight: 600;">
-                <svg viewBox="0 0 24 24" style="fill: #26A5E4;"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+            Developed by
+            <a href="https://t.me/ERROR_SHOWDOWN" class="tg-icon"
+                style="color: white; text-decoration: none; font-weight: 600;">
+                <svg viewBox="0 0 24 24" style="fill: #26A5E4;">
+                    <path d="m22 2-7 20-4-9-9-4Z" />
+                    <path d="M22 2 11 13" />
+                </svg>
                 Error Community
             </a>
         </div>
@@ -552,11 +760,11 @@
             try {
                 const res = await fetch('/api/v1/config');
                 const data = await res.json();
-                
+
                 document.getElementById('web-daily-limit').innerText = `${data.default_limit} req`;
                 document.getElementById('web-contact-link').innerText = data.contact;
                 document.getElementById('web-contact-link').href = `https://t.me/${data.contact.replace('@', '')}`;
-                
+
                 // Animate requests count
                 const countEl = document.getElementById('live-requests-count');
                 const target = data.total_requests || 0;
@@ -585,8 +793,8 @@
         function appendMessage(role, text) {
             const div = document.createElement('div');
             div.className = `message ${role}`;
-            
-            if(role === 'ai') {
+
+            if (role === 'ai') {
                 // Parse markdown
                 div.innerHTML = marked.parse(text);
                 // Highlight code blocks
@@ -607,7 +815,7 @@
             } else {
                 div.innerText = text;
             }
-            
+
             msgContainer.appendChild(div);
             msgContainer.scrollTop = msgContainer.scrollHeight;
             return div;
@@ -615,22 +823,22 @@
 
         async function sendMessage() {
             const text = userInput.value.trim();
-            if(!text) return;
-            
+            if (!text) return;
+
             userInput.value = '';
             appendMessage('user', text);
-            
+
             const loadingMsg = appendMessage('ai', '...');
-            
+
             try {
                 const response = await fetch('/api/v1/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ message: text, style: styleSelect.value })
                 });
-                
+
                 const data = await response.json();
-                if(data.error) {
+                if (data.error) {
                     loadingMsg.innerText = `Error: ${data.error}`;
                 } else {
                     loadingMsg.innerHTML = marked.parse(data.content);
@@ -656,14 +864,14 @@
         }
 
         sendBtn.onclick = sendMessage;
-        userInput.onkeypress = (e) => { if(e.key === 'Enter') sendMessage(); };
+        userInput.onkeypress = (e) => { if (e.key === 'Enter') sendMessage(); };
 
         // Fullscreen Toggle
         const chatContainer = document.querySelector('.chat-container');
         const fsBtn = document.getElementById('fullscreen-btn');
         fsBtn.onclick = () => {
             chatContainer.classList.toggle('fullscreen');
-            if(chatContainer.classList.contains('fullscreen')) {
+            if (chatContainer.classList.contains('fullscreen')) {
                 fsBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7"/></svg>';
             } else {
                 fsBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>';
@@ -673,4 +881,5 @@
         loadConfig();
     </script>
 </body>
+
 </html>
