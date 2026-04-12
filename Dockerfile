@@ -3,10 +3,15 @@ FROM python:3.11-slim
 WORKDIR /app
 
 # Install dependencies and curl for Ollama
-RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y \
+    curl \
+    ca-certificates \
+    pciutils \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install Ollama
-RUN curl -fsSL https://ollama.com/install.sh | sh
+# Install Ollama directly (more robust in Docker)
+RUN curl -L https://ollama.com/download/ollama-linux-amd64 -o /usr/bin/ollama && \
+    chmod +x /usr/bin/ollama
 
 # Set environment variables for Python
 ENV PYTHONDONTWRITEBYTECODE 1
