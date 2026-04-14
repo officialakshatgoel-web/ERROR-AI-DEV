@@ -9,3 +9,5 @@ pydantic
 pydantic-settings
 jinja2
 firebase-admin
+sqlalchemy
+psycopg2-binary
