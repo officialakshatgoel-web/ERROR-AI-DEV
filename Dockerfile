@@ -22,11 +22,12 @@ ENV PYTHONUNBUFFERED 1
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Pre-pull the dolphin-llama3 model into the image
-# We start the server in the background, wait for it, pull the model, then stop the server.
+# Pre-pull the required models into the image
+# We start the server in the background, wait for it, pull the models, then stop the server.
 RUN ollama serve & \
     sleep 5 && \
-    ollama pull dolphin-llama3 && \
+    ollama pull dolphin-llama3.1:8b && \
+    ollama pull qwen2.5-coder:32b && \
     pkill -f "ollama serve"
 
 # Copy the rest of the project
