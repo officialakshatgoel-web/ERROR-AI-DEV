@@ -2,7 +2,7 @@
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Status](https://img.shields.io/badge/status-Production--Ready-success.svg)
-![AI](https://img.shields.io/badge/AI-Dolphin--Llama3-purple.svg)
+![AI](https://img.shields.io/badge/AI-Ultimate--Combo-purple.svg)
 
 **Error AI** is a commercial-grade, fully uncensored AI proxy platform designed for high-performance deployments. It bridges the gap between local AI power (Ollama) and professional-grade managed services.
 
@@ -23,7 +23,7 @@
 ## 🛠️ Tech Stack
 
 - **Backend**: FastAPI (Python 3.11+)
-- **AI Engine**: Ollama (Dolphin-Llama3)
+- **AI Engine**: Ollama (Dolphin 8B + Qwen 32B)
 - **Database**: SQLite (SQLAlchemy 2.0+)
 - ** मैनेजमेंट**: Aiogram 3.x (Telegram Bot)
 - **Frontend**: Vanilla HTML5 / CSS3 (Modern Glassmorphism)
@@ -50,7 +50,7 @@ Once hosted, visit the `/documentation` endpoint on your domain for full integra
 ```bash
 curl https://errorapi.dev/v1/chat/completions \
   -H "Authorization: Bearer YOUR_KEY" \
-  -d '{"model": "dolphin-llama3", "messages": [{"role": "user", "content": "How to...?"}]}'
+  -d '{"model": "error-combo", "messages": [{"role": "user", "content": "How to...?"}]}'
 ```
 
 ---

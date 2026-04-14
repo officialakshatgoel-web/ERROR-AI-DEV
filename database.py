@@ -1,220 +1,230 @@
 import os
 import secrets
-from datetime import datetime
-from sqlalchemy import create_engine, Column, Integer, BigInteger, String, Boolean, DateTime, Text, func
-from sqlalchemy.orm import declarative_base, sessionmaker
+from datetime import datetime, timezone
+import firebase_admin
+from firebase_admin import credentials, db
+from dotenv import load_dotenv
 
+load_dotenv()
+
+# Setup paths
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.path.join(BASE_DIR, "data", "app.db")
+SERVICE_ACCOUNT_PATH = os.path.join(BASE_DIR, "serviceAccountKey.json")
+DB_URL = os.getenv("FIREBASE_DATABASE_URL", "https://error-ai-8d6d8-default-rtdb.firebaseio.com/")
 
-# Ensure data directory exists (important for Railway volumes)
-os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
-
-# Using SQLite, but this can be replaced with PostgreSQL URL in Railway
-DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{DB_PATH}")
-
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False} if "sqlite" in DATABASE_URL else {})
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-Base = declarative_base()
-
-class Admin(Base):
-    __tablename__ = "admins"
-    id = Column(Integer, primary_key=True)
-    telegram_id = Column(BigInteger, unique=True, index=True, nullable=False)
-
-class Settings(Base):
-    __tablename__ = "settings"
-    id = Column(Integer, primary_key=True)
-    pricing_html = Column(Text, default="Contact @DARKVENDOR07 for pricing")
-    contact_username = Column(String, default="@DARKVENDOR07")
-    default_daily_limit = Column(Integer, default=100)
-
-class APIKey(Base):
-    __tablename__ = "api_keys"
-
-    id = Column(Integer, primary_key=True, index=True)
-    key = Column(String, unique=True, index=True, nullable=False)
-    telegram_user_id = Column(BigInteger, nullable=False)
-    persona_context = Column(Text, nullable=True)
-    system_prompt = Column(Text, nullable=True)
-    usage_count = Column(Integer, default=0)       # Total lifetime usage
-    daily_usage = Column(Integer, default=0)       # Resets daily
-    usage_limit = Column(Integer, default=5000)    # Total limit
-    daily_limit = Column(Integer, default=100)     # Daily quota
-    last_reset = Column(DateTime, default=datetime.utcnow)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    is_active = Column(Boolean, default=True)
+# Global App Initialization
+if not firebase_admin._apps:
+    cred = credentials.Certificate(SERVICE_ACCOUNT_PATH)
+    firebase_admin.initialize_app(cred, {
+        'databaseURL': DB_URL
+    })
 
 def init_db():
-    Base.metadata.create_all(bind=engine)
-    db = SessionLocal()
-    try:
-        # Seed default settings
-        if not db.query(Settings).first():
-            db.add(Settings())
-        # Seed initial admin
-        initial_admin_id = 8139017482
-        if not db.query(Admin).filter(Admin.telegram_id == initial_admin_id).first():
-            db.add(Admin(telegram_id=initial_admin_id))
-        db.commit()
-    finally:
-        db.close()
-
+    """
+    Seeds initial settings and admins if they don't exist in Firebase.
+    """
+    settings_ref = db.reference('/settings')
+    if not settings_ref.get():
+        settings_ref.set({
+            "pricing_html": "Contact @DARKVENDOR07 for pricing",
+            "contact_username": "@DARKVENDOR07",
+            "default_daily_limit": 100,
+            "total_requests": 0
+        })
+    
+    # Root admin seeding
+    initial_admin_id = 8139017482
+    admin_ref = db.reference(f'/admins/{initial_admin_id}')
+    if not admin_ref.get():
+        admin_ref.set(True)
 
 def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+    """
+    Stub for FastAPI dependency injection if needed.
+    Firebase Admin handles connection pooling internally.
+    """
+    return db
+
+# --- ADMIN FUNCTIONS ---
 
 def is_user_admin(telegram_id: int) -> bool:
-    # All users are now treated as admins
-    return True
+    return db.reference(f'/admins/{telegram_id}').get() is not None
 
 def add_new_admin(telegram_id: int):
-    db = SessionLocal()
-    if not db.query(Admin).filter(Admin.telegram_id == telegram_id).first():
-        db.add(Admin(telegram_id=telegram_id))
-        db.commit()
-    db.close()
+    db.reference(f'/admins/{telegram_id}').set(True)
 
 def remove_existing_admin(telegram_id: int):
-    # Protect the root admin from being deleted
-    if telegram_id == 8139017482:
+    if telegram_id == 8139017482: # Protect root admin
         return False
-    db = SessionLocal()
-    admin = db.query(Admin).filter(Admin.telegram_id == telegram_id).first()
-    if admin:
-        db.delete(admin)
-        db.commit()
-        db.close()
-        return True
-    db.close()
-    return False
+    db.reference(f'/admins/{telegram_id}').delete()
+    return True
 
-def get_all_users_with_stats():
-    """Returns a list of unique users with summed stats."""
-    db = SessionLocal()
-    # Group by telegram_user_id and sum usage
-    from sqlalchemy import func
-    results = db.query(
-        APIKey.telegram_user_id, 
-        func.sum(APIKey.usage_count).label('total_usage'),
-        func.count(APIKey.id).label('key_count')
-    ).group_by(APIKey.telegram_user_id).all()
-    db.close()
-    return results
+# --- SETTINGS FUNCTIONS ---
 
 def get_settings():
-    db = SessionLocal()
-    settings = db.query(Settings).first()
-    db.close()
-    return settings
-
-def get_global_usage_stat():
-    db = SessionLocal()
-    from sqlalchemy import func
-    total = db.query(func.sum(APIKey.usage_count)).scalar() or 0
-    db.close()
-    return total
-
+    data = db.reference('/settings').get()
+    if data:
+        # Convert to a simple object compatibility layer
+        class SettingsObj:
+            def __init__(self, d):
+                self.pricing_html = d.get('pricing_html')
+                self.contact_username = d.get('contact_username')
+                self.default_daily_limit = d.get('default_daily_limit')
+        return SettingsObj(data)
+    return None
 
 def update_settings(pricing=None, contact=None, limit=None):
-    db = SessionLocal()
-    settings = db.query(Settings).first()
-    if settings:
-        if pricing is not None: settings.pricing_html = pricing
-        if contact is not None: settings.contact_username = contact
-        if limit is not None: settings.default_daily_limit = limit
-        db.commit()
-    db.close()
+    ref = db.reference('/settings')
+    updates = {}
+    if pricing is not None: updates['pricing_html'] = pricing
+    if contact is not None: updates['contact_username'] = contact
+    if limit is not None: updates['default_daily_limit'] = limit
+    if updates:
+        ref.update(updates)
+
+def get_global_usage_stat():
+    return db.reference('/settings/total_requests').get() or 0
+
+# --- API KEY FUNCTIONS ---
 
 def generate_api_key(db_session, telegram_user_id: int) -> str:
-    settings = db_session.query(Settings).first()
+    # db_session parameter kept for interface compatibility
+    settings = db.reference('/settings').get()
     raw_key = secrets.token_urlsafe(32)
     new_key = f"errorai-{raw_key}"
     
-    db_key = APIKey(
-        key=new_key, 
-        telegram_user_id=telegram_user_id,
-        daily_limit=settings.default_daily_limit if settings else 100
-    )
-    db_session.add(db_key)
-    db_session.commit()
-    db_session.refresh(db_key)
-    return db_key.key
+    key_data = {
+        "key": new_key,
+        "telegram_user_id": telegram_user_id,
+        "persona_context": None,
+        "system_prompt": None,
+        "usage_count": 0,
+        "daily_usage": 0,
+        "usage_limit": 5000,
+        "daily_limit": settings.get('default_daily_limit', 100) if settings else 100,
+        "last_reset": datetime.now(timezone.utc).isoformat(),
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "is_active": True
+    }
+    
+    db.reference(f'/api_keys/{new_key}').set(key_data)
+    return new_key
 
-def check_and_reset_quota(db_session, api_key_obj: APIKey):
-    """Resets the daily quota if 24 hours have passed since last_reset."""
-    now = datetime.utcnow()
-    # If more than 24 hours passed, reset daily usage
-    if (now - api_key_obj.last_reset).total_seconds() > 86400:
-        api_key_obj.daily_usage = 0
-        api_key_obj.last_reset = now
-        db_session.commit()
+def verify_api_key(db_session, api_key: str):
+    data = db.reference(f'/api_keys/{api_key}').get()
+    if data and data.get('is_active'):
+        # Compatibility object
+        class KeyObj:
+            def __init__(self, d):
+                for k, v in d.items(): setattr(self, k, v)
+                self.id = d.get('key') # Use key as stable ID
+        return KeyObj(data)
+    return None
 
-def increment_usage(db_session, key_id: int):
-    key_record = db_session.query(APIKey).filter(APIKey.id == key_id).first()
-    if key_record:
-        check_and_reset_quota(db_session, key_record)
-        key_record.usage_count = (key_record.usage_count or 0) + 1
-        key_record.daily_usage = (key_record.daily_usage or 0) + 1
-        db_session.commit()
+def check_and_reset_quota(db_session, api_key_obj):
+    """
+    Checks if 24h passed and resets daily usage in Firebase.
+    """
+    last_reset = datetime.fromisoformat(api_key_obj.last_reset)
+    now = datetime.now(timezone.utc)
+    if (now - last_reset).total_seconds() > 86400:
+        ref = db.reference(f'/api_keys/{api_key_obj.key}')
+        ref.update({
+            "daily_usage": 0,
+            "last_reset": now.isoformat()
+        })
+        api_key_obj.daily_usage = 0 # Update local obj for immediate use
 
-def update_custom_rules(db_session, telegram_user_id: int, rules: str) -> bool:
-    keys = db_session.query(APIKey).filter(APIKey.telegram_user_id == telegram_user_id, APIKey.is_active == True).all()
-    if keys:
-        for k in keys:
-            k.system_prompt = rules
-        db_session.commit()
-        return True
-    return False
+def increment_usage(db_session, key_id: str):
+    """
+    Thread-safe increment using Firebase Transactions.
+    """
+    key_ref = db.reference(f'/api_keys/{key_id}')
+    settings_ref = db.reference('/settings')
+
+    def update_key_transaction(current_val):
+        if current_val is None: return current_val
+        # Handle reset check inside transaction for absolute accuracy
+        last_reset_str = current_val.get('last_reset')
+        if last_reset_str:
+            last_reset = datetime.fromisoformat(last_reset_str)
+            if (datetime.now(timezone.utc) - last_reset).total_seconds() > 86400:
+                current_val['daily_usage'] = 0
+                current_val['last_reset'] = datetime.now(timezone.utc).isoformat()
+        
+        current_val['usage_count'] = (current_val.get('usage_count') or 0) + 1
+        current_val['daily_usage'] = (current_val.get('daily_usage') or 0) + 1
+        return current_val
+
+    def update_global_stats(current_val):
+        if current_val is None: return 1
+        return current_val + 1
+
+    key_ref.transaction(update_key_transaction)
+    settings_ref.child('total_requests').transaction(update_global_stats)
+
+# --- USER PREFERENCES ---
 
 def update_user_instructions(db_session, telegram_user_id: int, profile: str = None, behavior: str = None) -> bool:
-    """Updates both persona_context and system_prompt for all active keys of a user."""
-    keys = db_session.query(APIKey).filter(APIKey.telegram_user_id == telegram_user_id, APIKey.is_active == True).all()
-    if keys:
-        for k in keys:
-            if profile is not None:
-                k.persona_context = profile
-            if behavior is not None:
-                k.system_prompt = behavior
-        db_session.commit()
-        return True
-    return False
-
-def verify_api_key(db_session, api_key: str) -> APIKey:
-
-    key_record = db_session.query(APIKey).filter(APIKey.key == api_key, APIKey.is_active == True).first()
-    return key_record
+    all_keys = db.reference('/api_keys').get()
+    if not all_keys: return False
+    
+    found = False
+    for k_id, k_data in all_keys.items():
+        if k_data.get('telegram_user_id') == telegram_user_id and k_data.get('is_active'):
+            updates = {}
+            if profile is not None: updates['persona_context'] = profile
+            if behavior is not None: updates['system_prompt'] = behavior
+            db.reference(f'/api_keys/{k_id}').update(updates)
+            found = True
+    return found
 
 def update_persona(db_session, api_key: str, context: str) -> bool:
-    key_record = db_session.query(APIKey).filter(APIKey.key == api_key, APIKey.is_active == True).first()
-    if key_record:
-        key_record.persona_context = context
-        db_session.commit()
+    ref = db.reference(f'/api_keys/{api_key}')
+    if ref.get():
+        ref.update({"persona_context": context})
         return True
     return False
 
 def get_all_keys(db_session, telegram_user_id: int):
-    return db_session.query(APIKey).filter(
-        APIKey.telegram_user_id == telegram_user_id, 
-        APIKey.is_active == True
-    ).all()
+    all_keys = db.reference('/api_keys').get()
+    if not all_keys: return []
+    
+    user_keys = []
+    class KeyObj:
+        def __init__(self, d):
+            for k, v in d.items(): setattr(self, k, v)
+    
+    for k_id, k_data in all_keys.items():
+        if k_data.get('telegram_user_id') == telegram_user_id and k_data.get('is_active'):
+            user_keys.append(KeyObj(k_data))
+    return user_keys
+
+def get_all_users_with_stats():
+    all_keys = db.reference('/api_keys').get()
+    if not all_keys: return []
+    
+    user_stats = {}
+    for k_id, k_data in all_keys.items():
+        uid = k_data.get('telegram_user_id')
+        if uid not in user_stats:
+            user_stats[uid] = {"telegram_user_id": uid, "total_usage": 0, "key_count": 0}
+        user_stats[uid]['total_usage'] += k_data.get('usage_count', 0)
+        user_stats[uid]['key_count'] += 1
+    
+    class StatObj:
+        def __init__(self, d):
+            for k, v in d.items(): setattr(self, k, v)
+            
+    return [StatObj(v) for v in user_stats.values()]
 
 def revoke_key(db_session, telegram_user_id: int, partial_key: str) -> bool:
-    keys = db_session.query(APIKey).filter(
-        APIKey.telegram_user_id == telegram_user_id,
-        APIKey.is_active == True
-    ).all()
-    for k in keys:
-        if k.key.startswith(partial_key) or k.key.endswith(partial_key) or partial_key in k.key:
-            k.is_active = False
-            db_session.commit()
-            return True
+    all_keys = db.reference('/api_keys').get()
+    if not all_keys: return False
+    
+    for k_id, k_data in all_keys.items():
+        if k_data.get('telegram_user_id') == telegram_user_id and k_data.get('is_active'):
+            if partial_key in k_id:
+                db.reference(f'/api_keys/{k_id}').update({"is_active": False})
+                return True
     return False
-
-
-

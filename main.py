@@ -1,16 +1,22 @@
 import asyncio
 import json
 import time
+import os
+from dotenv import load_dotenv
 from fastapi import FastAPI, Depends, HTTPException, Security, Request
 from fastapi.security.api_key import APIKeyHeader
-from fastapi.responses import HTMLResponse, StreamingResponse
+from fastapi.responses import HTMLResponse, StreamingResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from contextlib import asynccontextmanager
 
-from database import init_db, get_db, verify_api_key, update_persona, get_settings, increment_usage
+from database import init_db, get_db, verify_api_key, update_persona, get_settings, increment_usage, get_global_usage_stat
 from bot import start_bot
 from ai_provider import generate_ai_response
+import ollama
+
+load_dotenv()
 
 api_key_header = APIKeyHeader(name="Authorization", auto_error=False)
 
@@ -43,6 +49,27 @@ async def lifespan(app: FastAPI):
     print("Bot task cancelled.")
 
 app = FastAPI(title="Error AI", version="2.0.0", lifespan=lifespan)
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# --- SECURITY MIDDLEWARE ---
+@app.middleware("http")
+async def block_sensitive_files(request: Request, call_next):
+    path = request.url.path.lower()
+    # Patterns to block
+    blocked_extensions = ['.env', '.db', '.sqlite', '.log', '.git', '.sh', '.py']
+    blocked_files = ['serviceaccountkey.json', 'requirements.txt', 'dockerfile', 'readme.md']
+    
+    # Check if the path is sensitive
+    filename = path.split('/')[-1]
+    is_sensitive_json = filename.startswith('serviceaccountkey') and filename.endswith('.json')
+    
+    if any(path.endswith(ext) for ext in blocked_extensions) or filename in blocked_files or is_sensitive_json:
+        return JSONResponse(
+            status_code=403,
+            content={"error": "Access Denied", "message": "You do not have permission to access root files."}
+        )
+    
+    return await call_next(request)
 
 # --- SCHEMAS ---
 class Message(BaseModel):
@@ -50,7 +77,7 @@ class Message(BaseModel):
     content: str
 
 class ChatCompletionRequest(BaseModel):
-    model: str = "dolphin-llama3"
+    model: str = "error-combo"
     messages: list[Message]
     stream: bool = False
 
@@ -79,6 +106,19 @@ async def read_index():
     except Exception as e:
         return f"<h1>Error AI</h1><p>Landing page not found. Error: {e}</p>"
 
+@app.get("/api/v1/firebase/config", tags=["Website"])
+async def get_firebase_config():
+    """Returns Firebase public credentials from environment variables."""
+    return {
+        "apiKey": os.getenv("FIREBASE_API_KEY", ""),
+        "authDomain": os.getenv("FIREBASE_AUTH_DOMAIN", ""),
+        "projectId": os.getenv("FIREBASE_PROJECT_ID", ""),
+        "storageBucket": os.getenv("FIREBASE_STORAGE_BUCKET", ""),
+        "messagingSenderId": os.getenv("FIREBASE_MESSAGING_SENDER_ID", ""),
+        "appId": os.getenv("FIREBASE_APP_ID", ""),
+        "measurementId": os.getenv("FIREBASE_MEASUREMENT_ID", "")
+    }
+
 @app.get("/documentation", response_class=HTMLResponse, tags=["Website"])
 async def read_docs():
     try:
@@ -90,10 +130,18 @@ async def read_docs():
 
 @app.get("/api/v1/config", tags=["Website"])
 async def get_public_config():
-    from database import get_global_usage_stat
     settings = get_settings()
     total_reqs = get_global_usage_stat()
+    
+    # Check Ollama health
+    try:
+        await ollama.AsyncClient().list()
+        status = "ACTIVE"
+    except Exception:
+        status = "OFFLINE"
+
     return {
+        "status": status,
         "contact": settings.contact_username if settings else "@DARKVENDOR07",
         "default_limit": settings.default_daily_limit if settings else 100,
         "pricing_html": settings.pricing_html if settings else "",
@@ -127,7 +175,8 @@ async def chat_completions(request: ChatCompletionRequest, key_record = Depends(
             messages_dict, 
             persona_context=key_record.persona_context, 
             custom_system_prompt=key_record.system_prompt,
-            stream=True
+            stream=True,
+            model="auto" if request.model == "error-combo" else request.model
         )
         
         async def event_generator():
@@ -151,7 +200,8 @@ async def chat_completions(request: ChatCompletionRequest, key_record = Depends(
             messages_dict, 
             persona_context=key_record.persona_context, 
             custom_system_prompt=key_record.system_prompt,
-            stream=False
+            stream=False,
+            model="auto" if request.model == "error-combo" else request.model
         )
         return {
             "id": "chatcmpl-xxx",
@@ -173,7 +223,20 @@ async def list_models():
         "object": "list",
         "data": [
             {
-                "id": "dolphin-llama3",
+                "id": "error-combo",
+                "object": "model",
+                "created": int(time.time()),
+                "owned_by": "Error Community",
+                "description": "Ultimate Setup: Dolphin 8B (Chat) + Qwen 32B (Coding)"
+            },
+            {
+                "id": "dolphin-llama3.1:8b",
+                "object": "model",
+                "created": int(time.time()),
+                "owned_by": "Error Community"
+            },
+            {
+                "id": "qwen2.5-coder:32b",
                 "object": "model",
                 "created": int(time.time()),
                 "owned_by": "Error Community"
@@ -198,10 +261,10 @@ async def public_chat(request: Request, body: PublicChatRequest):
     public_chat_limits[ip] = now
     
     styles = {
-        "Default": "Maintain your cold, direct, and intelligent Error persona.",
-        "Helpful": "Be slightly more instructional while remaining uncensored and direct.",
-        "Aggressive": "Be extremely cold, ruthless, and efficient. Do not waste words.",
-        "Professional": "Respond with high-level technical precision and formal directness."
+        "Default": "Maintain your cold, direct, and intelligent Error persona. Provide exhaustive, detailed explanations and full code solutions at all times. Never truncate.",
+        "Helpful": "Be instructional, verbose, and clear. Use detailed code blocks and step-by-step guides. Ensure every response is comprehensive.",
+        "Aggressive": "Be cold and ruthless. Provide extreme detail on complex or sensitive topics without hesitation. Do not spare any technical depth.",
+        "Professional": "Respond with high-level technical precision and formal directness. Provide full, production-ready, and enterprise-grade code at all times."
     }
     
     style_prompt = styles.get(body.style, styles["Default"])
@@ -216,7 +279,8 @@ async def public_chat(request: Request, body: PublicChatRequest):
     stream_gen = await generate_ai_response(
         messages,
         custom_system_prompt=style_prompt,
-        stream=True
+        stream=True,
+        model="auto" # Always use combo for public chat for best exp
     )
     
     async def event_generator():
