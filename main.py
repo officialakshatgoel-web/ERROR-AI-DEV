@@ -8,7 +8,6 @@ from fastapi.security.api_key import APIKeyHeader
 from fastapi.responses import HTMLResponse, StreamingResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
-from sqlalchemy.orm import Session
 from contextlib import asynccontextmanager
 
 from database import init_db, get_db, verify_api_key, update_persona, get_settings, increment_usage, get_global_usage_stat
@@ -28,7 +27,7 @@ def extract_token(auth_header: str) -> str:
         return parts[1] if len(parts) > 1 else None
     return auth_header
 
-async def get_api_key(auth_header: str = Security(api_key_header), db: Session = Depends(get_db)):
+async def get_api_key(auth_header: str = Security(api_key_header), db = Depends(get_db)):
     token = extract_token(auth_header)
     if not token:
         raise HTTPException(status_code=401, detail="Authorization header missing or invalid format")
@@ -151,7 +150,7 @@ async def get_public_config():
 
 
 @app.post("/v1/chat/completions", tags=["OpenAI Compatible"])
-async def chat_completions(request: ChatCompletionRequest, key_record = Depends(get_api_key), db: Session = Depends(get_db)):
+async def chat_completions(request: ChatCompletionRequest, key_record = Depends(get_api_key), db = Depends(get_db)):
     """
     OpenAI compatible endpoint. Supports stream=True.
     """
@@ -302,8 +301,7 @@ async def public_chat(request: Request, body: PublicChatRequest):
     )
 
 @app.post("/api/v1/persona", tags=["Admin & Context"])
-
-def update_user_persona(request: PersonaRequest, key_record = Depends(get_api_key), db: Session = Depends(get_db)):
+def update_user_persona(request: PersonaRequest, key_record = Depends(get_api_key), db = Depends(get_db)):
     """
     Update the persona context for the current API key.
     """

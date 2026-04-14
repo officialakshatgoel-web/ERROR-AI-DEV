@@ -6,7 +6,6 @@ from aiogram.fsm.context import FSMContext
 from dotenv import load_dotenv
 
 from database import (
-    SessionLocal, 
     generate_api_key, 
     get_all_keys, 
     revoke_key, 
@@ -17,7 +16,8 @@ from database import (
     update_user_instructions,
     update_custom_rules,
     update_settings,
-    APIKey
+    update_user_limit,
+    get_admin_stats
 )
 
 load_dotenv()
@@ -95,21 +95,18 @@ async def process_behavior(message: types.Message, state: FSMContext):
     behavior = message.text
     
     user_id = message.from_user.id
-    db = SessionLocal()
-    try:
-        success = update_user_instructions(db, user_id, profile=profile, behavior=behavior)
-        if success:
-            await message.answer(
-                "✅ *Custom Instructions Saved!*\n\n"
-                "*About You:* " + profile + "\n"
-                "*AI Behavior:* " + behavior,
-                parse_mode="Markdown"
-            )
-        else:
-            await message.answer("❌ Error: You need to generate an API Key first.")
-    finally:
-        db.close()
-        await state.clear()
+    success = update_user_instructions(None, user_id, profile=profile, behavior=behavior)
+    if success:
+        await message.answer(
+            "✅ *Custom Instructions Saved!*\n\n"
+            "*About You:* " + profile + "\n"
+            "*AI Behavior:* " + behavior,
+            parse_mode="Markdown"
+        )
+    else:
+        await message.answer("❌ Error: You need to generate an API Key first.")
+        
+    await state.clear()
 
 @dp.message(Command("addadmin"))
 async def handle_add_admin(message: types.Message):
@@ -198,18 +195,11 @@ async def handle_user_limit(message: types.Message):
         target_id = int(args[1])
         new_limit = int(args[2])
         
-        db = SessionLocal()
-        try:
-            keys = db.query(APIKey).filter(APIKey.telegram_user_id == target_id).all()
-            if not keys:
-                await message.answer(f"❌ No keys found for user {target_id}")
-                return
-            for k in keys:
-                k.daily_limit = new_limit
-            db.commit()
+        updated = update_user_limit(target_id, new_limit)
+        if updated:
             await message.answer(f"✅ Updated daily limit for User {target_id} to {new_limit}")
-        finally:
-            db.close()
+        else:
+            await message.answer(f"❌ No active keys found for user {target_id}")
     except Exception:
         await message.answer("Usage: /userlimit <telegram_id> <limit>")
 
@@ -218,38 +208,22 @@ async def handle_backup(message: types.Message):
     if not is_user_admin(message.from_user.id):
         await message.answer("❌ You are not authorized to use this command.")
         return
-    from database import DB_PATH
-    from aiogram.types import FSInputFile
-    if os.path.exists(DB_PATH):
-        await message.answer_document(
-            FSInputFile(DB_PATH),
-            caption="📂 *Error AI Database Backup*\n\nKeep this file safe!",
-            parse_mode="Markdown"
-        )
-    else:
-        await message.answer("❌ Database file not found.")
+    await message.answer("ℹ️ Cloud Database is securely hosted on Firebase. Native local backups are no longer needed via bot.")
 
 @dp.message(Command("adminstats"))
 async def handle_admin_stats(message: types.Message):
     if not is_user_admin(message.from_user.id):
         await message.answer("❌ You are not authorized to use this command.")
         return
-    db = SessionLocal()
-    try:
-        total_keys = db.query(APIKey).count()
-        active_keys = db.query(APIKey).filter(APIKey.is_active == True).count()
-        all_keys = db.query(APIKey).all()
-        req_sum = sum(k.usage_count for k in all_keys)
-        
-        await message.answer(
-            f"📈 *System Wide Stats*\n\n"
-            f"Total Keys: {total_keys}\n"
-            f"Active Keys: {active_keys}\n"
-            f"Total Requests Processed: {req_sum}",
-            parse_mode="Markdown"
-        )
-    finally:
-        db.close()
+    stats = get_admin_stats()
+    
+    await message.answer(
+        f"📈 *System Wide Stats*\n\n"
+        f"Total Keys: {stats['total_keys']}\n"
+        f"Active Keys: {stats['active_keys']}\n"
+        f"Total Requests Processed: {stats['total_requests']}",
+        parse_mode="Markdown"
+    )
 
 @dp.message(Command("help"))
 async def handle_help(message: types.Message):
@@ -280,28 +254,23 @@ def get_progress_bar(current, total, length=10):
 @dp.message(Command("stats"))
 async def handle_stats(message: types.Message):
     user_id = message.from_user.id
-    db = SessionLocal()
-    try:
-        keys = get_all_keys(db, telegram_user_id=user_id)
-        total_requests = sum(k.usage_count for k in keys) if keys else 0
-        active_keys_count = len(keys)
-        
-        await message.answer(
-            f"📊 *Error AI — Your Stats*\n\n"
-            f"• *Keys:* `{active_keys_count}` active\n"
-            f"• *Total Lifetime Usage:* `{total_requests}` requests\n\n"
-            "_Use /listkeys for a detailed breakdown._",
-            parse_mode="Markdown"
-        )
-    finally:
-        db.close()
+    keys = get_all_keys(None, telegram_user_id=user_id)
+    total_requests = sum(k.usage_count for k in keys) if keys else 0
+    active_keys_count = len(keys)
+    
+    await message.answer(
+        f"📊 *Error AI — Your Stats*\n\n"
+        f"• *Keys:* `{active_keys_count}` active\n"
+        f"• *Total Lifetime Usage:* `{total_requests}` requests\n\n"
+        "_Use /listkeys for a detailed breakdown._",
+        parse_mode="Markdown"
+    )
 
 @dp.message(Command("generatekey"))
 async def handle_generate_key(message: types.Message):
     user_id = message.from_user.id
-    db = SessionLocal()
     try:
-        api_key = generate_api_key(db, telegram_user_id=user_id)
+        api_key = generate_api_key(None, telegram_user_id=user_id)
         await message.answer(
             f"✅ *New Key Generated*\n\n"
             f"`{api_key}`\n\n"
@@ -311,29 +280,23 @@ async def handle_generate_key(message: types.Message):
     except Exception as e:
         print(f"Error generating key: {e}")
         await message.answer("❌ *Error:* Failed to generate API key.")
-    finally:
-        db.close()
 
 @dp.message(Command("listkeys"))
 async def handle_list_keys(message: types.Message):
     user_id = message.from_user.id
-    db = SessionLocal()
-    try:
-        keys = get_all_keys(db, telegram_user_id=user_id)
-        if not keys:
-            await message.answer("❌ You have no active keys. Use /generatekey.")
-            return
-            
-        text = "🔑 *Your API Keys*\n\n"
-        for k in keys:
-            prog = get_progress_bar(k.daily_usage, k.daily_limit)
-            text += f"`{k.key[:15]}...`\n"
-            text += f"Daily: {prog} {k.daily_usage}/{k.daily_limit}\n"
-            text += f"Total: `{k.usage_count}` reqs\n\n"
-            
-        await message.answer(text, parse_mode="Markdown")
-    finally:
-        db.close()
+    keys = get_all_keys(None, telegram_user_id=user_id)
+    if not keys:
+        await message.answer("❌ You have no active keys. Use /generatekey.")
+        return
+        
+    text = "🔑 *Your API Keys*\n\n"
+    for k in keys:
+        prog = get_progress_bar(k.daily_usage, k.daily_limit)
+        text += f"`{k.key[:15]}...`\n"
+        text += f"Daily: {prog} {k.daily_usage}/{k.daily_limit}\n"
+        text += f"Total: `{k.usage_count}` reqs\n\n"
+        
+    await message.answer(text, parse_mode="Markdown")
 
 @dp.message(Command("revoke"))
 async def handle_revoke_key(message: types.Message):
@@ -343,15 +306,11 @@ async def handle_revoke_key(message: types.Message):
         return
         
     user_id = message.from_user.id
-    db = SessionLocal()
-    try:
-        success = revoke_key(db, user_id, parts[1])
-        if success:
-            await message.answer("✅ *Key Revoked:* Access for this key has been disabled.")
-        else:
-            await message.answer("❌ *Error:* Key not found or belongs to another user.")
-    finally:
-        db.close()
+    success = revoke_key(None, user_id, parts[1])
+    if success:
+        await message.answer("✅ *Key Revoked:* Access for this key has been disabled.")
+    else:
+        await message.answer("❌ *Error:* Key not found or belongs to another user.")
 
 async def start_bot():
     if TELEGRAM_BOT_TOKEN:

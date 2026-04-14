@@ -228,3 +228,27 @@ def revoke_key(db_session, telegram_user_id: int, partial_key: str) -> bool:
                 db.reference(f'/api_keys/{k_id}').update({"is_active": False})
                 return True
     return False
+
+def update_user_limit(telegram_id: int, new_limit: int) -> bool:
+    all_keys = db.reference('/api_keys').get()
+    if not all_keys: return False
+    
+    updated = False
+    for k_id, k_data in all_keys.items():
+        if k_data.get('telegram_user_id') == telegram_id:
+            db.reference(f'/api_keys/{k_id}').update({"daily_limit": new_limit})
+            updated = True
+    return updated
+
+def get_admin_stats() -> dict:
+    all_keys = db.reference('/api_keys').get() or {}
+    total_keys = len(all_keys)
+    active_keys = sum(1 for k in all_keys.values() if k.get('is_active'))
+    req_sum = sum(k.get('usage_count', 0) for k in all_keys.values())
+    
+    return {
+        "total_keys": total_keys,
+        "active_keys": active_keys,
+        "total_requests": req_sum
+    }
+
