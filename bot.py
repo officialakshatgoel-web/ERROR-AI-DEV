@@ -14,7 +14,6 @@ from database import (
     remove_existing_admin, 
     get_all_users_with_stats, 
     update_user_instructions,
-    update_custom_rules,
     update_settings,
     update_user_limit,
     get_admin_stats
