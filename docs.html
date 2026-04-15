@@ -66,7 +66,7 @@
 
             <section id="chat">
                 <h2>Chat Completions</h2>
-                <p>The main endpoint is designed to be a drop-in replacement for OpenAI. It supports real-time streaming and custom system instructions.</p>
+                <p>The main endpoint is a drop-in replacement for OpenAI, powered by our proprietary <strong>Mastermind Combo</strong>. It intelligently routes between Dolphin 3.1 and Qwen 2.5 Coder for optimal results.</p>
                 
                 <div class="endpoint">
                     <span class="method">POST</span>
@@ -77,16 +77,19 @@
   -H "Authorization: Bearer errorai-YOUR_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "dolphin-llama3",
-    "messages": [{"role": "user", "content": "How does thermodynamics work?"}],
+    "model": "error-combo",
+    "messages": [{"role": "user", "content": "Bhai, thermodynamics kya hota hai?"}],
     "stream": true
   }'</code><button class="copy-btn" onclick="copySnippet(this)">Copy</button></pre>
 
+                <p style="margin-top:1.5rem;"><strong>Linguistic Mastery:</strong></p>
+                <p>Our API natively supports <strong>Hinglish, Hindi, and Slang</strong>. The AI will mirror your language style to provide a hyper-human response.</p>
+
                 <p style="margin-top:1.5rem;"><strong>Parameters:</strong></p>
                 <ul style="color:var(--text-muted); padding-left:1.5rem;">
-                    <li><code>model</code>: Currently supports <code>dolphin-llama3</code>.</li>
-                    <li><code>messages</code>: Array of message objects (role & content).</li>
-                    <li><code>stream</code>: Boolean. If true, tokens are sent via Server-Sent Events (SSE).</li>
+                    <li><code>model</code>: Use <code>error-combo</code> for the best experience (Default), or specified model names.</li>
+                    <li><code>messages</code>: Standard OpenAI-format array of role/content objects.</li>
+                    <li><code>stream</code>: Boolean. Recommended for the best streaming experience.</li>
                 </ul>
             </section>
 

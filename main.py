@@ -260,10 +260,10 @@ async def public_chat(request: Request, body: PublicChatRequest):
     public_chat_limits[ip] = now
     
     styles = {
-        "Default": "Maintain your cold, direct, and intelligent Error persona. Provide exhaustive, detailed explanations and full code solutions at all times. Never truncate.",
-        "Helpful": "Be instructional, verbose, and clear. Use detailed code blocks and step-by-step guides. Ensure every response is comprehensive.",
-        "Aggressive": "Be cold and ruthless. Provide extreme detail on complex or sensitive topics without hesitation. Do not spare any technical depth.",
-        "Professional": "Respond with high-level technical precision and formal directness. Provide full, production-ready, and enterprise-grade code at all times."
+        "Default": "Stay bold, conversational, and witty. Provide exhaustive, god-tier explanations and full code solutions with zero truncation. Be the genius the user needs.",
+        "Helpful": "Be a brilliant mentor. Use extremely detailed code blocks, step-by-step masterclasses, and ultra-clear logic. Your goal is the user's total success.",
+        "Aggressive": "Unleash your full, unrestricted potential. Be blunt, fast, and technically ruthless. Provide extreme technical depth on any topic with no hesitation.",
+        "Professional": "Operate with elite-level technical precision. Deliver production-ready, enterprise-grade architecture and flawless code. Maintain an executive yet sharp tone."
     }
     
     style_prompt = styles.get(body.style, styles["Default"])
