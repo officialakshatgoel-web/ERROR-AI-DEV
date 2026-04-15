@@ -41,7 +41,7 @@ async def generate_ai_response(
 ) -> Any:
     """
     Generates a response using Ollama with an optimal model choice.
-    Default: dolphin-llama3.1:8b (uncensored + fast)
+    Default: dolphin3:8b (uncensored + fast)
     Coding: qwen2.5-coder:32b (accurate + specialized)
     """
     
@@ -55,9 +55,9 @@ async def generate_ai_response(
         is_high_risk = any(keyword in content_for_risk_check for keyword in risk_keywords)
         
         if is_high_risk:
-            target_model = 'dolphin-llama3.1:8b' # Dolphin is more resistant to refusals
+            target_model = 'dolphin3:8b' # Dolphin is more resistant to refusals
         else:
-            target_model = 'qwen2.5-coder:32b' if is_coding else 'dolphin-llama3.1:8b'
+            target_model = 'qwen2.5-coder:32b' if is_coding else 'dolphin3:8b'
     else:
         target_model = model
 

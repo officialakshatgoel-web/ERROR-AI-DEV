@@ -26,7 +26,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # We start the server in the background, wait for it, pull the models, then stop the server.
 RUN ollama serve & \
     sleep 5 && \
-    ollama pull dolphin-llama3.1:8b && \
+    ollama pull dolphin3:8b && \
     ollama pull qwen2.5-coder:32b && \
     pkill -f "ollama serve"
 
