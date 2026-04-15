@@ -22,14 +22,6 @@ ENV PYTHONUNBUFFERED 1
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Pre-pull the required models into the image
-# We start the server in the background, wait for it, pull the models, then stop the server.
-RUN ollama serve & \
-    sleep 5 && \
-    ollama pull dolphin3:8b && \
-    ollama pull qwen2.5-coder:32b && \
-    pkill -f "ollama serve"
-
 # Copy the rest of the project
 COPY . .
 
@@ -37,6 +29,7 @@ COPY . .
 RUN mkdir -p /app/data
 
 # Create a startup script that runs both Ollama daemon and the FastAPI server
+# We pull the models at RUNTIME to keep the Docker image small and bypass Railway's size limits.
 RUN echo '#!/bin/bash\n\
 ollama serve &\n\
 \n\
@@ -45,7 +38,11 @@ while ! curl -s http://localhost:11434 > /dev/null; do\n\
     sleep 2\n\
 done\n\
 \n\
-echo "Ollama is ready. Starting FastAPI server..."\n\
+echo "Ollama is ready. Ensuring Mastermind models are active..."\n\
+ollama pull dolphin3:8b\n\
+ollama pull qwen2.5-coder:32b\n\
+\n\
+echo "Starting FastAPI server..."\n\
 exec uvicorn main:app --host 0.0.0.0 --port 8000\n\
 ' > /app/start.sh && chmod +x /app/start.sh
 
